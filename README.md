@@ -1,1 +1,1 @@
-# Package Committer
+# Package GitReport

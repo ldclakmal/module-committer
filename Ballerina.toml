@@ -2,6 +2,6 @@
 org-name = "chanakal"
 version = "0.0.1"
 authors = ["Chanaka Lakmal"]
-keywords = ["committer", "github", "google-docs", "pull-requests", "issues"]
+keywords = ["git-report", "github", "pull-requests", "issues"]
 repository = "https://github.com/ldclakmal/package-committer"
 license = "Apache-2.0"
