@@ -3,5 +3,5 @@ org-name = "chanakal"
 version = "0.0.1"
 authors = ["Chanaka Lakmal"]
 keywords = ["git-report", "github", "pull-requests", "issues"]
-repository = "https://github.com/ldclakmal/package-committer"
+repository = "https://github.com/ldclakmal/package-gitreport"
 license = "Apache-2.0"

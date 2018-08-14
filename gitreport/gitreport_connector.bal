@@ -33,30 +33,27 @@ import ballerina/config;
 import ballerina/http;
 import ballerina/io;
 
-@final string GIT_USERNAME = "ldclakmal";
-@final string NEXT_REALTION = "rel=\"next\"";
-@final string LAST_RELATION = "rel=\"last\"";
-@final string EMPTY_STRING = "";
-@final string SEMICOLON = ";";
-@final string COMMA = ",";
-
-endpoint http:Client githubClient {
-    url: "https://api.github.com",
+endpoint http:Client gitReportClient {
+    url: API_URL,
     auth: {
         scheme: http:OAUTH2,
-        accessToken: config:getAsString("GITHUB_TOKEN")
+        accessToken: config:getAsString(GITHUB_TOKEN)
     }
 };
 
 function main(string... args) {
+    string githubOrg = config:getAsString(GITHUB_ORGANIZATION_NAME);
+    string githubRepo = config:getAsString(GITHUB_REPOSITORY_NAME);
+    string githubUser = config:getAsString(GITHUB_USERNAME);
+
     boolean isContinue = true;
-    string path = "/repos/ballerina-platform/ballerina-lang/pulls?state=all";
+    string path = "/repos/" + githubOrg + "/" + githubRepo + "/pulls?state=all";
     while (isContinue) {
-        var response = githubClient->get(path);
+        var response = gitReportClient->get(path);
         match response {
             http:Response res => {
-                if (res.hasHeader("Link")) {
-                    string link = res.getHeader("Link");
+                if (res.hasHeader(LINK_HEADER)) {
+                    string link = res.getHeader(LINK_HEADER);
                     //io:println("Link Headers: " + link);
                     string[] urlWithRelationArray = link.split(COMMA);
                     string nextUrl;
@@ -65,10 +62,10 @@ function main(string... args) {
                         string urlWithBrackets = urlWithRealtion.split(SEMICOLON)[0].trim();
                         if (urlWithRealtion.contains(NEXT_REALTION)) {
                             nextUrl = urlWithBrackets.substring(1, urlWithBrackets.length() - 1)
-                            .replace(githubClient.config.url, EMPTY_STRING);
+                            .replace(gitReportClient.config.url, EMPTY_STRING);
                         } else if (urlWithRealtion.contains(LAST_RELATION)) {
                             lastUrl = urlWithBrackets.substring(1, urlWithBrackets.length() - 1)
-                            .replace(githubClient.config.url, EMPTY_STRING);
+                            .replace(gitReportClient.config.url, EMPTY_STRING);
                         }
                     }
                     //io:println("Next URL: " + nextUrl);
@@ -84,7 +81,7 @@ function main(string... args) {
                 }
                 json[] payload = check <json[]>(check res.getJsonPayload());
                 foreach i, pr in payload  {
-                    if (pr.user.login.toString() == GIT_USERNAME) {
+                    if (pr.user.login.toString() == githubUser) {
                         io:println(pr.title);
                     }
                 }
