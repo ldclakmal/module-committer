@@ -16,6 +16,8 @@
 
 // API URLs
 @final string API_URL = "https://api.github.com";
+@final string REPOS = "/repos";
+@final string PULLS = "/pulls";
 
 // API Response related parameters
 @final string LINK_HEADER = "Link";
@@ -26,9 +28,15 @@
 @final string EMPTY_STRING = "";
 @final string SEMICOLON = ";";
 @final string COMMA = ",";
+@final string FORWARD_SLASH = "/";
 
 // Conf parameter keys
 @final string GITHUB_TOKEN = "GITHUB_TOKEN";
 @final string GITHUB_ORGANIZATION_NAME = "GITHUB_ORGANIZATION_NAME";
 @final string GITHUB_REPOSITORY_NAME = "GITHUB_REPOSITORY_NAME";
 @final string GITHUB_USERNAME = "GITHUB_USERNAME";
+
+// PR statuse
+@final string STATE_ALL = "state=all";
+@final string STATE_OPEN = "state=open";
+@final string STATE_CLOSED = "state=closed";
