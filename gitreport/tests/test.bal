@@ -28,7 +28,8 @@ endpoint Client gitReportClient {
     },
     githubOrg: config:getAsString(GITHUB_ORGANIZATION_NAME),
     githubRepo: config:getAsString(GITHUB_REPOSITORY_NAME),
-    githubUser: config:getAsString(GITHUB_USERNAME)
+    githubUser: config:getAsString(GITHUB_USERNAME),
+    scanFromDate: config:getAsString(SCAN_FROM_DATE)
 };
 
 @test:Config

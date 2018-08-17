@@ -18,12 +18,14 @@ import ballerina/config;
 import ballerina/http;
 import ballerina/io;
 import ballerina/log;
+import ballerina/time;
 
 public type GitReportConnector object {
 
     public string githubOrg;
     public string githubRepo;
     public string githubUser;
+    public string scanFromDate;
     public http:Client client;
 
     documentation {
@@ -36,12 +38,14 @@ public type GitReportConnector object {
 
 function GitReportConnector::getPullRequestList(string status) returns (string[]|error) {
     endpoint http:Client httpClient = self.client;
-    string requestPath = REPOS + FORWARD_SLASH + self.githubOrg + FORWARD_SLASH + self.githubRepo + PULLS + "?" + status;
+    string requestPath = REPOS + FORWARD_SLASH + self.githubOrg + FORWARD_SLASH + self.githubRepo + PULLS
+        + QUESTION_MARK + status;
     io:println("---");
     io:println("Details of the GitHub parameters");
     io:println("    GitHub Org    : " + self.githubOrg);
     io:println("    GitHub Repo   : " + self.githubRepo);
     io:println("    GitHub User   : " + self.githubUser);
+    io:println("    Scan From     : " + self.scanFromDate);
     io:println("---");
     io:print("Processing ");
     string[] listOfPullRequests;
@@ -70,7 +74,14 @@ function GitReportConnector::getPullRequestList(string status) returns (string[]
                 match resPayload {
                     json[] payload => {
                         foreach pr in payload  {
-                            if (pr.user.login.toString() == self.githubUser) {
+                            // Check for the PR created date and stop the process if it is older than the given date
+                            // since the PR scan starts from today, until the date of GitHub repo created.
+                            int createdDate = <int>time:parse(pr.created_at.toString().split("T")[0], DATE_FORMAT).time;
+                            int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
+                            if (createdDate < fromDate) {
+                                isContinue = false;
+                                break;
+                            } else if (pr.user.login.toString() == self.githubUser) {
                                 listOfPullRequests[prCount] = pr.html_url.toString();
                                 prCount++;
                             }

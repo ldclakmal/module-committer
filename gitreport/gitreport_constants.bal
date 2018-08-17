@@ -28,6 +28,7 @@
 @final string EMPTY_STRING = "";
 @final string SEMICOLON = ";";
 @final string COMMA = ",";
+@final string QUESTION_MARK = "?";
 @final string FORWARD_SLASH = "/";
 
 // Conf parameter keys
@@ -35,8 +36,12 @@
 @final string GITHUB_ORGANIZATION_NAME = "GITHUB_ORGANIZATION_NAME";
 @final string GITHUB_REPOSITORY_NAME = "GITHUB_REPOSITORY_NAME";
 @final string GITHUB_USERNAME = "GITHUB_USERNAME";
+@final string SCAN_FROM_DATE = "SCAN_FROM_DATE";
 
 // PR statuse
 @final string STATE_ALL = "state=all";
 @final string STATE_OPEN = "state=open";
 @final string STATE_CLOSED = "state=closed";
+
+// Time fortmats
+@final string DATE_FORMAT = "yyyy-MM-dd";

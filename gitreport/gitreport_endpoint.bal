@@ -44,12 +44,14 @@ documentation {
     F{{githubOrg}} GitHub organization name
     F{{githubRepo}} GitHub repository name
     F{{githubUser}} GitHub username
+    F{{scanFromDate}} Starting date of the scan
     F{{clientConfig}} The http client endpoint configuration
 }
 public type GitReportConfiguration record {
     string githubOrg;
     string githubRepo;
     string githubUser;
+    string scanFromDate;
     http:ClientEndpointConfig clientConfig;
 };
 
@@ -58,6 +60,7 @@ function Client::init(GitReportConfiguration config) {
     self.gitReportConnector.githubOrg = config.githubOrg;
     self.gitReportConnector.githubRepo = config.githubRepo;
     self.gitReportConnector.githubUser = config.githubUser;
+    self.gitReportConnector.scanFromDate = config.scanFromDate;
     self.gitReportConnector.client.init(config.clientConfig);
 }
 
