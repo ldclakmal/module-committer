@@ -32,11 +32,10 @@ endpoint Client gitReportClient {
 function testGetPullRequestList() {
     string githubUser = "ldclakmal";
     string[] githubRepoList = [
-        "https://github.com/ballerina-platform/ballerina-lang",
         "https://github.com/wso2/transport-http",
+        "https://github.com/ballerina-platform/ballerina-lang",
         "https://github.com/ballerina-platform/ballerina-examples",
         "https://github.com/ballerina-platform/ballerina-www",
-        "https://github.com/ballerina-guides/ballerina-demo",
         "https://github.com/wso2-ballerina/package-twitter",
         "https://github.com/wso2-ballerina/package-gmail",
         "https://github.com/wso2-ballerina/package-salesforce",
@@ -49,6 +48,7 @@ function testGetPullRequestList() {
         "https://github.com/wso2-ballerina/package-consul",
         "https://github.com/wso2-ballerina/package-sonarqube",
         "https://github.com/wso2-ballerina/package-kafka",
+        "https://github.com/ballerina-guides/ballerina-demo",
         "https://github.com/ballerina-guides/ballerina-with-istio",
         "https://github.com/ballerina-guides/salesforce-twilio-integration",
         "https://github.com/ballerina-guides/sonarqube-github-integration",
