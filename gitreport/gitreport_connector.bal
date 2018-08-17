@@ -90,7 +90,7 @@ function GitReportConnector::getPullRequestList(string githubUser, string[] gith
                             foreach pr in payload  {
                                 // Check for the PR created date and stop the process if it is older than the given date
                                 // since the PR scan starts from today, until the date of GitHub repo created.
-                                if (fromDate == -1) {
+                                if (fromDate != -1) {
                                     int createdDate = <int>time:parse(pr.created_at.toString()
                                         .split(TIME_BOUNDARY)[0], DATE_FORMAT).time;
                                     if (createdDate < fromDate) {
