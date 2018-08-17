@@ -26,8 +26,7 @@ endpoint Client gitReportClient {
             accessToken: config:getAsString(GITHUB_TOKEN)
         }
     },
-    githubOrg: config:getAsString(GITHUB_ORGANIZATION_NAME),
-    githubRepo: config:getAsString(GITHUB_REPOSITORY_NAME),
+    githubRepoList: config:getAsString(GITHUB_REPO_LIST),
     githubUser: config:getAsString(GITHUB_USERNAME),
     scanFromDate: config:getAsString(SCAN_FROM_DATE)
 };
@@ -36,11 +35,7 @@ endpoint Client gitReportClient {
 function testGetPullRequestList() {
     var details = gitReportClient->getPullRequestList(STATE_ALL);
     match details {
-        string[] prList => {
-            foreach pr in prList {
-                io:println(pr);
-            }
-        }
+        () => {}
         error err => {
             test:assertFail(msg = err.message);
         }

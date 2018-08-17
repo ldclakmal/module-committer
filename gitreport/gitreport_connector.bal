@@ -22,93 +22,94 @@ import ballerina/time;
 
 public type GitReportConnector object {
 
-    public string githubOrg;
-    public string githubRepo;
+    public string githubRepoList;
     public string githubUser;
     public string scanFromDate;
     public http:Client client;
 
     documentation {
-        Return pull requests url list for the given status
+        Prints the pull request URLs for the given status and given set of GitHub repositories
         P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
-        R{{}} If success, returns string array with URLs of pull requests,e lse returns an `error`
+        R{{}} If success, returns nill, else returns an `error`
     }
-    public function getPullRequestList(string status) returns (string[]|error);
+    public function getPullRequestList(string status) returns error?;
 };
 
-function GitReportConnector::getPullRequestList(string status) returns (string[]|error) {
+function GitReportConnector::getPullRequestList(string status) returns error? {
     endpoint http:Client httpClient = self.client;
-    if (self.githubOrg == EMPTY_STRING || self.githubRepo == EMPTY_STRING || self.githubUser == EMPTY_STRING) {
-        error e = { message: "One or more of the inputs (GitHubOrg, GitHubRepo, GitHubUser) are not provided" };
+    if (self.githubRepoList == EMPTY_STRING || self.githubUser == EMPTY_STRING) {
+        error e = { message: "One or more of the required inputs (GitHubRepoList, GitHubUser) are not provided" };
         return e;
     }
-    string requestPath = REPOS + FORWARD_SLASH + self.githubOrg + FORWARD_SLASH + self.githubRepo + PULLS
-        + QUESTION_MARK + status;
-    io:println("---");
-    io:println("Details of the GitHub parameters");
-    io:println("    GitHub Org    : " + self.githubOrg);
-    io:println("    GitHub Repo   : " + self.githubRepo);
-    io:println("    GitHub User   : " + self.githubUser);
-    io:println("    Scan From     : " + self.scanFromDate);
-    io:println("---");
-    io:print("Processing ");
-    string[] listOfPullRequests;
-    boolean isContinue = true;
-    int prCount = 0;
-    while (isContinue) {
-        io:print("•");
-        var response = httpClient->get(requestPath);
-        match response {
-            http:Response res => {
-                if (res.hasHeader(LINK_HEADER)) {
-                    string linkHeader = res.getHeader(LINK_HEADER);
-                    string nextUrl;
-                    string lastUrl;
-                    (nextUrl, lastUrl) = getNextAndLastResourcePaths(linkHeader);
-                    // Check for the last page of PRs and if so, stop the loop.
-                    if (nextUrl.equalsIgnoreCase(lastUrl)) {
-                        isContinue = false;
+    string[] githubRepoList = self.githubRepoList.split(COMMA);
+    foreach githubRepoUrl in githubRepoList {
+        string githubOrgWithRepo = githubRepoUrl.replace(GITHUB_URL, EMPTY_STRING).trim();
+        string requestPath = REPOS + FORWARD_SLASH + githubOrgWithRepo + PULLS + QUESTION_MARK + status;
+        io:println("---");
+        io:println("Details of the GitHub parameters");
+        io:println("    GitHub Org/Repo : " + githubOrgWithRepo);
+        io:println("    GitHub User     : " + self.githubUser);
+        io:println("    Scan From       : " + self.scanFromDate);
+        io:println("---");
+        io:print("Processing ");
+        string[] listOfPullRequests;
+        boolean isContinue = true;
+        int prCount = 0;
+        while (isContinue) {
+            io:print("•");
+            var response = httpClient->get(requestPath);
+            match response {
+                http:Response res => {
+                    if (res.hasHeader(LINK_HEADER)) {
+                        string linkHeader = res.getHeader(LINK_HEADER);
+                        string nextUrl;
+                        string lastUrl;
+                        (nextUrl, lastUrl) = getNextAndLastResourcePaths(linkHeader);
+                        // Check for the last page of PRs and if so, stop the loop.
+                        if (nextUrl.equalsIgnoreCase(lastUrl)) {
+                            isContinue = false;
+                        } else {
+                            requestPath = nextUrl;
+                        }
                     } else {
-                        requestPath = nextUrl;
+                        isContinue = false;
                     }
-                } else {
-                    isContinue = false;
-                }
-                var resPayload = <json[]>(check res.getJsonPayload());
-                match resPayload {
-                    json[] payload => {
-                        foreach pr in payload  {
-                            // Check for the PR created date and stop the process if it is older than the given date
-                            // since the PR scan starts from today, until the date of GitHub repo created.
-                            if (self.scanFromDate != EMPTY_STRING) {
-                                int createdDate = <int>time:parse(pr.created_at.toString().split("T")[0], DATE_FORMAT).
-                                time;
-                                int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
-                                if (createdDate < fromDate) {
-                                    isContinue = false;
-                                    break;
+                    var resPayload = <json[]>(check res.getJsonPayload());
+                    match resPayload {
+                        json[] payload => {
+                            foreach pr in payload  {
+                                // Check for the PR created date and stop the process if it is older than the given date
+                                // since the PR scan starts from today, until the date of GitHub repo created.
+                                if (self.scanFromDate != EMPTY_STRING) {
+                                    int createdDate = <int>time:parse(pr.created_at.toString()
+                                        .split("T")[0], DATE_FORMAT).time;
+                                    int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
+                                    if (createdDate < fromDate) {
+                                        isContinue = false;
+                                        break;
+                                    }
+                                }
+                                if (pr.user.login.toString() == self.githubUser) {
+                                    listOfPullRequests[prCount] = pr.html_url.toString();
+                                    prCount++;
                                 }
                             }
-                            if (pr.user.login.toString() == self.githubUser) {
-                                listOfPullRequests[prCount] = pr.html_url.toString();
-                                prCount++;
-                            }
+                        }
+                        error e => {
+                            log:printError("Error while converting json into json[]", err = e);
+                            return e;
                         }
                     }
-                    error e => {
-                        log:printError("Error while converting json into json[]", err = e);
-                        return e;
-                    }
                 }
-
-            }
-            error e => {
-                log:printError("Error while calling the GitHub REST API", err = e);
-                return e;
+                error e => {
+                    log:printError("Error while calling the GitHub REST API", err = e);
+                    return e;
+                }
             }
         }
+        io:println(" ✔");
+        io:println("---");
+        printList(listOfPullRequests);
     }
-    io:println(" ✔");
-    io:println("---");
-    return listOfPullRequests;
+    return ();
 }

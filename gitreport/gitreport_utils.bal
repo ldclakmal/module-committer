@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/io;
+
 documentation{
     Return the next URL and last URL after clearing the given link header with other symbols
     `Link: <https://api.github.com/resource?page=2>; rel="next",
@@ -46,4 +48,15 @@ documentation{
 function getResourcePath(string link) returns string {
     string urlWithBrackets = link.split(SEMICOLON)[0].trim();
     return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_URL, EMPTY_STRING);
+}
+
+documentation{
+    Print the items in the given list
+
+    P{{list}} List to be printed
+}
+function printList(string[] list) {
+    foreach item in list {
+        io:println(item);
+    }
 }

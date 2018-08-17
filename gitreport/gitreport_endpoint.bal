@@ -37,19 +37,16 @@ public type Client object {
         R{{}} GitReport connector object
     }
     public function getCallerActions() returns GitReportConnector;
-
 };
 
 documentation {
-    F{{githubOrg}} GitHub organization name
-    F{{githubRepo}} GitHub repository name
+    F{{githubRepoList}} GitHub repository URL list
     F{{githubUser}} GitHub username
     F{{scanFromDate}} Starting date of the scan
     F{{clientConfig}} The http client endpoint configuration
 }
 public type GitReportConfiguration record {
-    string githubOrg;
-    string githubRepo;
+    string githubRepoList;
     string githubUser;
     string scanFromDate;
     http:ClientEndpointConfig clientConfig;
@@ -57,8 +54,7 @@ public type GitReportConfiguration record {
 
 function Client::init(GitReportConfiguration config) {
     config.clientConfig.url = API_URL;
-    self.gitReportConnector.githubOrg = config.githubOrg;
-    self.gitReportConnector.githubRepo = config.githubRepo;
+    self.gitReportConnector.githubRepoList = config.githubRepoList;
     self.gitReportConnector.githubUser = config.githubUser;
     self.gitReportConnector.scanFromDate = config.scanFromDate;
     self.gitReportConnector.client.init(config.clientConfig);
