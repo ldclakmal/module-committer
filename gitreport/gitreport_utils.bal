@@ -14,6 +14,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
+documentation{
+    Return the resource path after clearing the given URL with other symbols
+    `Link: <https://api.github.com/resource?page=2>; rel="next",
+      <https://api.github.com/resource?page=5>; rel="last"`
+
+    P{{link}} Link URL with other parameters
+    R{{}} Cleaned resource path
+}
 function getResourcePath(string link) returns string {
     string urlWithBrackets = link.split(SEMICOLON)[0].trim();
     return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_URL, EMPTY_STRING);

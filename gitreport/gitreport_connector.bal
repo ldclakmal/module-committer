@@ -59,6 +59,7 @@ function GitReportConnector::getPullRequestList(string status) returns (string[]
                             lastUrl = getResourcePath(urlWithRealtion);
                         }
                     }
+                    // Check for the last page of PRs and if so, stop the loop.
                     if (nextUrl.equalsIgnoreCase(lastUrl)) {
                         isContinue = false;
                         io:println(".");
@@ -89,6 +90,5 @@ function GitReportConnector::getPullRequestList(string status) returns (string[]
             }
         }
     }
-
     return listOfPullRequests;
 }
