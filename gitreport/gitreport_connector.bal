@@ -36,33 +36,30 @@ public type GitReportConnector object {
 
 function GitReportConnector::getPullRequestList(string status) returns (string[]|error) {
     endpoint http:Client httpClient = self.client;
-    io:print("Processing ");
     string requestPath = REPOS + FORWARD_SLASH + self.githubOrg + FORWARD_SLASH + self.githubRepo + PULLS + "?" + status;
+    io:println("---");
+    io:println("Details of the GitHub parameters");
+    io:println("    GitHub Org    : " + self.githubOrg);
+    io:println("    GitHub Repo   : " + self.githubRepo);
+    io:println("    GitHub User   : " + self.githubUser);
+    io:println("---");
+    io:print("Processing ");
     string[] listOfPullRequests;
     boolean isContinue = true;
     int prCount = 0;
     while (isContinue) {
-        io:print(".");
+        io:print("•");
         var response = httpClient->get(requestPath);
         match response {
             http:Response res => {
                 if (res.hasHeader(LINK_HEADER)) {
-                    string link = res.getHeader(LINK_HEADER);
-                    string[] urlWithRelationArray = link.split(COMMA);
+                    string linkHeader = res.getHeader(LINK_HEADER);
                     string nextUrl;
                     string lastUrl;
-                    foreach urlWithRealtion in urlWithRelationArray {
-                        string urlWithBrackets = urlWithRealtion.split(SEMICOLON)[0].trim();
-                        if (urlWithRealtion.contains(NEXT_REALTION)) {
-                            nextUrl = getResourcePath(urlWithRealtion);
-                        } else if (urlWithRealtion.contains(LAST_RELATION)) {
-                            lastUrl = getResourcePath(urlWithRealtion);
-                        }
-                    }
+                    (nextUrl, lastUrl) = getNextAndLastResourcePaths(linkHeader);
                     // Check for the last page of PRs and if so, stop the loop.
                     if (nextUrl.equalsIgnoreCase(lastUrl)) {
                         isContinue = false;
-                        io:println(".");
                     } else {
                         requestPath = nextUrl;
                     }
@@ -90,5 +87,7 @@ function GitReportConnector::getPullRequestList(string status) returns (string[]
             }
         }
     }
+    io:println(" ✔");
+    io:println("---");
     return listOfPullRequests;
 }

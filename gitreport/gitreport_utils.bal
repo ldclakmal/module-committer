@@ -15,9 +15,30 @@
 // under the License.
 
 documentation{
-    Return the resource path after clearing the given URL with other symbols
+    Return the next URL and last URL after clearing the given link header with other symbols
     `Link: <https://api.github.com/resource?page=2>; rel="next",
       <https://api.github.com/resource?page=5>; rel="last"`
+
+    P{{linkHeader}} Link header of the request
+    R{{}} Next URL and Last URL
+}
+function getNextAndLastResourcePaths(string linkHeader) returns (string, string) {
+    string[] urlWithRelationArray = linkHeader.split(COMMA);
+    string nextUrl;
+    string lastUrl;
+    foreach urlWithRealtion in urlWithRelationArray {
+        string urlWithBrackets = urlWithRealtion.split(SEMICOLON)[0].trim();
+        if (urlWithRealtion.contains(NEXT_REALTION)) {
+            nextUrl = getResourcePath(urlWithRealtion);
+        } else if (urlWithRealtion.contains(LAST_RELATION)) {
+            lastUrl = getResourcePath(urlWithRealtion);
+        }
+    }
+    return (nextUrl, lastUrl);
+}
+
+documentation{
+    Return the resource path after clearing the given URL with other symbols
 
     P{{link}} Link URL with other parameters
     R{{}} Cleaned resource path
