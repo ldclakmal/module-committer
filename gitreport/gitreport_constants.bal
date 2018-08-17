@@ -31,6 +31,7 @@
 @final string COMMA = ",";
 @final string QUESTION_MARK = "?";
 @final string FORWARD_SLASH = "/";
+@final string TIME_BOUNDARY = "T";
 
 // Conf parameter keys
 @final string GITHUB_TOKEN = "GITHUB_TOKEN";

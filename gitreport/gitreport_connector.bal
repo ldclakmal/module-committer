@@ -37,14 +37,18 @@ public type GitReportConnector object {
 
 function GitReportConnector::getPullRequestList(string status) returns error? {
     endpoint http:Client httpClient = self.client;
+
+    // Validate inputs
     if (self.githubRepoList == EMPTY_STRING || self.githubUser == EMPTY_STRING) {
         error e = { message: "One or more of the required inputs (GitHubRepoList, GitHubUser) are not provided" };
         return e;
     }
+
     string[] githubRepoList = self.githubRepoList.split(COMMA);
     foreach githubRepoUrl in githubRepoList {
         string githubOrgWithRepo = githubRepoUrl.replace(GITHUB_URL, EMPTY_STRING).trim();
         string requestPath = REPOS + FORWARD_SLASH + githubOrgWithRepo + PULLS + QUESTION_MARK + status;
+
         io:println("---");
         io:println("Details of the GitHub parameters");
         io:println("    GitHub Org/Repo : " + githubOrgWithRepo);
@@ -52,6 +56,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
         io:println("    Scan From       : " + self.scanFromDate);
         io:println("---");
         io:print("Processing ");
+
         string[] listOfPullRequests;
         boolean isContinue = true;
         int prCount = 0;
@@ -60,6 +65,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
             var response = httpClient->get(requestPath);
             match response {
                 http:Response res => {
+
                     if (res.hasHeader(LINK_HEADER)) {
                         string linkHeader = res.getHeader(LINK_HEADER);
                         string nextUrl;
@@ -74,6 +80,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
                     } else {
                         isContinue = false;
                     }
+
                     var resPayload = <json[]>(check res.getJsonPayload());
                     match resPayload {
                         json[] payload => {
@@ -82,13 +89,15 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
                                 // since the PR scan starts from today, until the date of GitHub repo created.
                                 if (self.scanFromDate != EMPTY_STRING) {
                                     int createdDate = <int>time:parse(pr.created_at.toString()
-                                        .split("T")[0], DATE_FORMAT).time;
+                                        .split(TIME_BOUNDARY)[0], DATE_FORMAT).time;
                                     int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
                                     if (createdDate < fromDate) {
                                         isContinue = false;
                                         break;
                                     }
                                 }
+
+                                // Check for the PR is from the given user, if so add it into the list
                                 if (pr.user.login.toString() == self.githubUser) {
                                     listOfPullRequests[prCount] = pr.html_url.toString();
                                     prCount++;
@@ -100,6 +109,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
                             return e;
                         }
                     }
+
                 }
                 error e => {
                     log:printError("Error while calling the GitHub REST API", err = e);
