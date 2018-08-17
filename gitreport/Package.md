@@ -38,33 +38,35 @@ The GitReport connector allows you to list all the pull requests you sent and li
 
 ## Sample code
 
-    ```ballerina
-    import ballerina/config;
-    import ballerina/http;
-    import ballerina/io;
-    import chanakal/gitreport;
+This code explains how to get the pull requests sent to the given set of GitHub repositories by the given username after the given date.
 
-    endpoint gitreport:Client gitReportClient {
-        clientConfig: {
-            auth: {
-                scheme: http:OAUTH2,
-                accessToken: config:getAsString(GITHUB_TOKEN)
-            }
-        }
-    };
+```ballerina
+import ballerina/config;
+import ballerina/http;
+import ballerina/io;
+import chanakal/gitreport;
 
-    function main (string... args) {
-        string githubUser = "ldclakmal";
-        string[] githubRepoList = [
-            "https://github.com/wso2/transport-http",
-            "https://github.com/ballerina-platform/ballerina-lang"
-        ];
-        string scanFromDate = "2018-01-01";
-
-        var details = gitReportClient->getPullRequestList(githubUser, githubRepoList, scanFromDate, gitreport:STATE_ALL);
-        match details {
-            () => {}
-            error err => { io:println(err); }
+endpoint gitreport:Client gitReportClient {
+    clientConfig: {
+        auth: {
+            scheme: http:OAUTH2,
+            accessToken: config:getAsString(GITHUB_TOKEN)
         }
     }
-    ```
+};
+
+function main (string... args) {
+    string githubUser = "ldclakmal";
+    string[] githubRepoList = [
+        "https://github.com/wso2/transport-http",
+        "https://github.com/ballerina-platform/ballerina-lang"
+    ];
+    string scanFromDate = "2018-01-01";
+
+    var details = gitReportClient->getPullRequestList(githubUser, githubRepoList, scanFromDate, gitreport:STATE_ALL);
+    match details {
+        () => {}
+        error err => { io:println(err); }
+    }
+}
+```
