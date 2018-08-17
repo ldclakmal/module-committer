@@ -35,9 +35,6 @@
 
 // Conf parameter keys
 @final string GITHUB_TOKEN = "GITHUB_TOKEN";
-@final string GITHUB_REPO_LIST = "GITHUB_REPO_LIST";
-@final string GITHUB_USERNAME = "GITHUB_USERNAME";
-@final string SCAN_FROM_DATE = "SCAN_FROM_DATE";
 
 // PR statuse
 @final string STATE_ALL = "state=all";

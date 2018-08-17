@@ -25,15 +25,38 @@ endpoint Client gitReportClient {
             scheme: http:OAUTH2,
             accessToken: config:getAsString(GITHUB_TOKEN)
         }
-    },
-    githubRepoList: config:getAsString(GITHUB_REPO_LIST),
-    githubUser: config:getAsString(GITHUB_USERNAME),
-    scanFromDate: config:getAsString(SCAN_FROM_DATE)
+    }
 };
 
 @test:Config
 function testGetPullRequestList() {
-    var details = gitReportClient->getPullRequestList(STATE_ALL);
+    string githubUser = "ldclakmal";
+    string[] githubRepoList = [
+        "https://github.com/ballerina-platform/ballerina-lang",
+        "https://github.com/wso2/transport-http",
+        "https://github.com/ballerina-platform/ballerina-examples",
+        "https://github.com/ballerina-platform/ballerina-www",
+        "https://github.com/ballerina-guides/ballerina-demo",
+        "https://github.com/wso2-ballerina/package-twitter",
+        "https://github.com/wso2-ballerina/package-gmail",
+        "https://github.com/wso2-ballerina/package-salesforce",
+        "https://github.com/wso2-ballerina/package-googlespreadsheet",
+        "https://github.com/wso2-ballerina/package-twilio",
+        "https://github.com/wso2-ballerina/package-soap",
+        "https://github.com/wso2-ballerina/package-github",
+        "https://github.com/wso2-ballerina/package-scim2",
+        "https://github.com/wso2-ballerina/package-jira",
+        "https://github.com/wso2-ballerina/package-consul",
+        "https://github.com/wso2-ballerina/package-sonarqube",
+        "https://github.com/wso2-ballerina/package-kafka",
+        "https://github.com/ballerina-guides/ballerina-with-istio",
+        "https://github.com/ballerina-guides/salesforce-twilio-integration",
+        "https://github.com/ballerina-guides/sonarqube-github-integration",
+        "https://github.com/ballerina-guides/gmail-spreadsheet-integration"
+    ];
+    string scanFromDate = "2018-01-01";
+
+    var details = gitReportClient->getPullRequestList(githubUser, githubRepoList, scanFromDate, STATE_ALL);
     match details {
         () => {}
         error err => {

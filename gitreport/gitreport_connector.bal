@@ -22,30 +22,32 @@ import ballerina/time;
 
 public type GitReportConnector object {
 
-    public string githubRepoList;
-    public string githubUser;
-    public string scanFromDate;
     public http:Client client;
 
     documentation {
         Prints the pull request URLs for the given status and given set of GitHub repositories
+        P{{githubUser}} GitHub username
+        P{{githubRepoList}} GitHub repository URL list
+        P{{scanFromDate}} Starting date of the scan
         P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
     }
-    public function getPullRequestList(string status) returns error?;
+    public function getPullRequestList(string githubUser, string[] githubRepoList, string? scanFromDate, string status)
+                        returns error?;
 };
 
-function GitReportConnector::getPullRequestList(string status) returns error? {
+function GitReportConnector::getPullRequestList(string githubUser, string[] githubRepoList,
+                                                string? scanFromDate, string status) returns error? {
+
     endpoint http:Client httpClient = self.client;
 
-    // Validate inputs
-    if (self.githubRepoList == EMPTY_STRING || self.githubUser == EMPTY_STRING) {
-        error e = { message: "One or more of the required inputs (GitHubRepoList, GitHubUser) are not provided" };
-        return e;
+    int fromDate = -1;
+    match scanFromDate {
+        string date => fromDate = <int>time:parse(date, DATE_FORMAT).time;
+        () => {}
     }
 
     int totalPrCount = 0;
-    string[] githubRepoList = self.githubRepoList.split(COMMA);
     foreach githubRepoUrl in githubRepoList {
         string githubOrgWithRepo = githubRepoUrl.replace(GITHUB_URL, EMPTY_STRING).trim();
         string requestPath = REPOS + FORWARD_SLASH + githubOrgWithRepo + PULLS + QUESTION_MARK + status;
@@ -53,8 +55,8 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
         io:println("---");
         io:println("Details of the GitHub parameters");
         io:println("    GitHub Org/Repo : " + githubOrgWithRepo);
-        io:println("    GitHub User     : " + self.githubUser);
-        io:println("    Scan From       : " + self.scanFromDate);
+        io:println("    GitHub User     : " + githubUser);
+        io:println("    Scan From       : " + (scanFromDate but { () => EMPTY_STRING}));
         io:println("---");
         io:print("Processing ");
 
@@ -88,10 +90,9 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
                             foreach pr in payload  {
                                 // Check for the PR created date and stop the process if it is older than the given date
                                 // since the PR scan starts from today, until the date of GitHub repo created.
-                                if (self.scanFromDate != EMPTY_STRING) {
+                                if (fromDate == -1) {
                                     int createdDate = <int>time:parse(pr.created_at.toString()
                                         .split(TIME_BOUNDARY)[0], DATE_FORMAT).time;
-                                    int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
                                     if (createdDate < fromDate) {
                                         isContinue = false;
                                         break;
@@ -99,7 +100,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
                                 }
 
                                 // Check for the PR is from the given user, if so add it into the list
-                                if (pr.user.login.toString() == self.githubUser) {
+                                if (pr.user.login.toString() == githubUser) {
                                     listOfPullRequests[prCount] = pr.html_url.toString();
                                     prCount++;
                                     totalPrCount++;

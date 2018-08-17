@@ -40,23 +40,14 @@ public type Client object {
 };
 
 documentation {
-    F{{githubRepoList}} GitHub repository URL list
-    F{{githubUser}} GitHub username
-    F{{scanFromDate}} Starting date of the scan
     F{{clientConfig}} The http client endpoint configuration
 }
 public type GitReportConfiguration record {
-    string githubRepoList;
-    string githubUser;
-    string scanFromDate;
     http:ClientEndpointConfig clientConfig;
 };
 
 function Client::init(GitReportConfiguration config) {
     config.clientConfig.url = API_URL;
-    self.gitReportConnector.githubRepoList = config.githubRepoList;
-    self.gitReportConnector.githubUser = config.githubUser;
-    self.gitReportConnector.scanFromDate = config.scanFromDate;
     self.gitReportConnector.client.init(config.clientConfig);
 }
 
