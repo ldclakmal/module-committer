@@ -38,6 +38,10 @@ public type GitReportConnector object {
 
 function GitReportConnector::getPullRequestList(string status) returns (string[]|error) {
     endpoint http:Client httpClient = self.client;
+    if (self.githubOrg == EMPTY_STRING || self.githubRepo == EMPTY_STRING || self.githubUser == EMPTY_STRING) {
+        error e = { message: "One or more of the inputs (GitHubOrg, GitHubRepo, GitHubUser) are not provided" };
+        return e;
+    }
     string requestPath = REPOS + FORWARD_SLASH + self.githubOrg + FORWARD_SLASH + self.githubRepo + PULLS
         + QUESTION_MARK + status;
     io:println("---");
@@ -76,12 +80,16 @@ function GitReportConnector::getPullRequestList(string status) returns (string[]
                         foreach pr in payload  {
                             // Check for the PR created date and stop the process if it is older than the given date
                             // since the PR scan starts from today, until the date of GitHub repo created.
-                            int createdDate = <int>time:parse(pr.created_at.toString().split("T")[0], DATE_FORMAT).time;
-                            int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
-                            if (createdDate < fromDate) {
-                                isContinue = false;
-                                break;
-                            } else if (pr.user.login.toString() == self.githubUser) {
+                            if (self.scanFromDate != EMPTY_STRING) {
+                                int createdDate = <int>time:parse(pr.created_at.toString().split("T")[0], DATE_FORMAT).
+                                time;
+                                int fromDate = <int>time:parse(self.scanFromDate, DATE_FORMAT).time;
+                                if (createdDate < fromDate) {
+                                    isContinue = false;
+                                    break;
+                                }
+                            }
+                            if (pr.user.login.toString() == self.githubUser) {
                                 listOfPullRequests[prCount] = pr.html_url.toString();
                                 prCount++;
                             }
@@ -89,12 +97,14 @@ function GitReportConnector::getPullRequestList(string status) returns (string[]
                     }
                     error e => {
                         log:printError("Error while converting json into json[]", err = e);
+                        return e;
                     }
                 }
 
             }
             error e => {
                 log:printError("Error while calling the GitHub REST API", err = e);
+                return e;
             }
         }
     }
