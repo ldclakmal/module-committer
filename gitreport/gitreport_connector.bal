@@ -44,6 +44,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
         return e;
     }
 
+    int totalPrCount = 0;
     string[] githubRepoList = self.githubRepoList.split(COMMA);
     foreach githubRepoUrl in githubRepoList {
         string githubOrgWithRepo = githubRepoUrl.replace(GITHUB_URL, EMPTY_STRING).trim();
@@ -101,6 +102,7 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
                                 if (pr.user.login.toString() == self.githubUser) {
                                     listOfPullRequests[prCount] = pr.html_url.toString();
                                     prCount++;
+                                    totalPrCount++;
                                 }
                             }
                         }
@@ -121,5 +123,8 @@ function GitReportConnector::getPullRequestList(string status) returns error? {
         io:println("---");
         printList(listOfPullRequests);
     }
+    io:println("---");
+    io:println("Total PR Count: " + totalPrCount);
+    io:println("---");
     return ();
 }
