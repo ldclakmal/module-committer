@@ -38,7 +38,7 @@ The GitReport connector allows you to list all the pull requests you sent and li
 
 ## Sample code
 
-This code explains how to get the pull requests sent to the given set of GitHub repositories by the given username after the given date.
+This code explains how to get the pull requests sent to the given set of GitHub repositories by the given username after the given date. The date should be in `YYYY-MM-DD` format.
 
 ```ballerina
 import ballerina/config;

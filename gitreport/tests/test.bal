@@ -52,7 +52,8 @@ function testGetPullRequestList() {
         "https://github.com/ballerina-guides/ballerina-with-istio",
         "https://github.com/ballerina-guides/salesforce-twilio-integration",
         "https://github.com/ballerina-guides/sonarqube-github-integration",
-        "https://github.com/ballerina-guides/gmail-spreadsheet-integration"
+        "https://github.com/ballerina-guides/gmail-spreadsheet-integration",
+        "https://github.com/ballerina-guides/securing-restful-services-with-basic-auth"
     ];
     string scanFromDate = "2018-01-01";
 

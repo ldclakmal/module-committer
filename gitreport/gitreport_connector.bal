@@ -28,7 +28,7 @@ public type GitReportConnector object {
         Prints the pull request URLs for the given status and given set of GitHub repositories
         P{{githubUser}} GitHub username
         P{{githubRepoList}} GitHub repository URL list
-        P{{scanFromDate}} Starting date of the scan
+        P{{scanFromDate}} Starting date of the scan. It should be in `YYYY-MM-DD` format
         P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
     }
