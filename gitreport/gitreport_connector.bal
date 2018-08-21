@@ -27,7 +27,7 @@ public type GitReportConnector object {
     documentation {
         Prints the pull request URLs for the given user and given state
         P{{githubUser}} GitHub username
-        P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
+        P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
     }
     public function getPullRequestList(string githubUser, string state) returns error?;
