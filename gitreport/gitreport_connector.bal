@@ -20,112 +20,73 @@ import ballerina/io;
 import ballerina/log;
 import ballerina/time;
 
+int totalCount = 0;
+
 public type GitReportConnector object {
 
     public http:Client client;
 
-    documentation {
-        Prints the pull request URLs for the given status and given set of GitHub repositories
-        P{{githubUser}} GitHub username
-        P{{githubRepoList}} GitHub repository URL list
-        P{{scanFromDate}} Starting date of the scan. It should be in `YYYY-MM-DD` format
-        P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
-        R{{}} If success, returns nill, else returns an `error`
-    }
-    public function getPullRequestList(string githubUser, string[] githubRepoList, string? scanFromDate, string status)
-                        returns error?;
+    //documentation {
+    //    Prints the pull request URLs for the given status and given set of GitHub repositories
+    //    P{{githubUser}} GitHub username
+    //    P{{githubRepoList}} GitHub repository URL list
+    //    P{{scanFromDate}} Starting date of the scan. It should be in `YYYY-MM-DD` format
+    //    P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
+    //    R{{}} If success, returns nill, else returns an `error`
+    //}
+    public function getPullRequestList(string githubUser, string state) returns error?;
 };
 
-function GitReportConnector::getPullRequestList(string githubUser, string[] githubRepoList,
-                                                string? scanFromDate, string status) returns error? {
+function GitReportConnector::getPullRequestList(string githubUser, string state) returns error? {
 
-    endpoint http:Client httpClient = self.client;
+    string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
+    map<string[]> responseMap;
 
-    int fromDate = -1;
-    match scanFromDate {
-        string date => fromDate = <int>time:parse(date, DATE_FORMAT).time;
-        () => {}
+    var r = doSomething(self.client, requestPath, responseMap);
+    match r {
+        () => {
+            io:println("---");
+            io:println("Report of the GitHub Pull Requests");
+            io:println("• GitHub User   : " + githubUser);
+            io:println("• State         : " + state);
+            io:println("• Total PR Count: " + totalCount);
+            io:println("---");
+            printReport(responseMap);
+            return ();
+        }
+        error e => {
+            log:printError("Error while calling the GitHub REST API", err = e);
+            return e;
+        }
     }
+}
 
-    int totalPrCount = 0;
-    foreach githubRepoUrl in githubRepoList {
-        string githubOrgWithRepo = githubRepoUrl.replace(GITHUB_URL, EMPTY_STRING).trim();
-        string requestPath = REPOS + FORWARD_SLASH + githubOrgWithRepo + PULLS + QUESTION_MARK + status;
+function doSomething(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
+    endpoint http:Client httpClient = client;
+    var response = httpClient->get(requestPath);
+    match response {
+        http:Response res => {
+            json payload = check res.getJsonPayload();
+            totalCount = untaint check <int>payload.total_count;
+            json[] prList = check <json[]>payload.items;
+            foreach pr in prList {
+                string repoUrl = check <string>pr.repository_url;
+                string prUrl = check <string>pr.html_url;
+                addToMap(responseMap, repoUrl, prUrl);
+            }
 
-        io:println("---");
-        io:println("Details of the GitHub parameters");
-        io:println("    GitHub Org/Repo : " + githubOrgWithRepo);
-        io:println("    GitHub User     : " + githubUser);
-        io:println("    Scan From       : " + (scanFromDate but { () => EMPTY_STRING}));
-        io:println("---");
-        io:print("Processing ");
-
-        string[] listOfPullRequests;
-        boolean isContinue = true;
-        int prCount = 0;
-        while (isContinue) {
-            io:print("•");
-            var response = httpClient->get(requestPath);
-            match response {
-                http:Response res => {
-
-                    if (res.hasHeader(LINK_HEADER)) {
-                        string linkHeader = res.getHeader(LINK_HEADER);
-                        string nextUrl;
-                        string lastUrl;
-                        (nextUrl, lastUrl) = getNextAndLastResourcePaths(linkHeader);
-                        // Check for the last page of PRs and if so, stop the loop.
-                        if (nextUrl.equalsIgnoreCase(lastUrl)) {
-                            isContinue = false;
-                        } else {
-                            requestPath = nextUrl;
-                        }
-                    } else {
-                        isContinue = false;
-                    }
-
-                    var resPayload = <json[]>(check res.getJsonPayload());
-                    match resPayload {
-                        json[] payload => {
-                            foreach pr in payload  {
-                                // Check for the PR created date and stop the process if it is older than the given date
-                                // since the PR scan starts from today, until the date of GitHub repo created.
-                                if (fromDate != -1) {
-                                    int createdDate = <int>time:parse(pr.created_at.toString()
-                                        .split(TIME_BOUNDARY)[0], DATE_FORMAT).time;
-                                    if (createdDate < fromDate) {
-                                        isContinue = false;
-                                        break;
-                                    }
-                                }
-
-                                // Check for the PR is from the given user, if so add it into the list
-                                if (pr.user.login.toString() == githubUser) {
-                                    listOfPullRequests[prCount] = pr.html_url.toString();
-                                    prCount++;
-                                    totalPrCount++;
-                                }
-                            }
-                        }
-                        error e => {
-                            log:printError("Error while converting json into json[]", err = e);
-                            return e;
-                        }
-                    }
-
-                }
-                error e => {
-                    log:printError("Error while calling the GitHub REST API", err = e);
-                    return e;
+            if (res.hasHeader(LINK_HEADER)) {
+                string linkHeader = res.getHeader(LINK_HEADER);
+                string nextResourcePath = getNextResourcePath(linkHeader);
+                // Check for the next page of PR is exists.
+                if (nextResourcePath != EMPTY_STRING) {
+                    return doSomething(client, nextResourcePath, responseMap);
                 }
             }
+            return ();
         }
-        io:println(" ✔");
-        io:println("---");
-        printList(listOfPullRequests);
+        error e => {
+            return e;
+        }
     }
-    io:println("---");
-    io:println("Total PR Count: " + totalPrCount);
-    io:println("---");
-    return ();
 }

@@ -47,7 +47,7 @@ public type GitReportConfiguration record {
 };
 
 function Client::init(GitReportConfiguration config) {
-    config.clientConfig.url = API_URL;
+    config.clientConfig.url = API_BASE_URL;
     self.gitReportConnector.client.init(config.clientConfig);
 }
 

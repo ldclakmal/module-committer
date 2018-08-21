@@ -17,26 +17,24 @@
 import ballerina/io;
 
 documentation{
-    Return the next URL and last URL after clearing the given link header with other symbols
+    Return the untainted next URL after clearing the given link header with other symbols. If next URL is not given,
+    returns an empty string, which represents the last page
     `Link: <https://api.github.com/resource?page=2>; rel="next",
       <https://api.github.com/resource?page=5>; rel="last"`
 
     P{{linkHeader}} Link header of the request
     R{{}} Next URL and Last URL
 }
-function getNextAndLastResourcePaths(string linkHeader) returns (string, string) {
+function getNextResourcePath(string linkHeader) returns @untainted string {
     string[] urlWithRelationArray = linkHeader.split(COMMA);
     string nextUrl;
-    string lastUrl;
     foreach urlWithRealtion in urlWithRelationArray {
         string urlWithBrackets = urlWithRealtion.split(SEMICOLON)[0].trim();
         if (urlWithRealtion.contains(NEXT_REALTION)) {
             nextUrl = getResourcePath(urlWithRealtion);
-        } else if (urlWithRealtion.contains(LAST_RELATION)) {
-            lastUrl = getResourcePath(urlWithRealtion);
         }
     }
-    return (nextUrl, lastUrl);
+    return nextUrl;
 }
 
 documentation{
@@ -47,16 +45,30 @@ documentation{
 }
 function getResourcePath(string link) returns string {
     string urlWithBrackets = link.split(SEMICOLON)[0].trim();
-    return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_URL, EMPTY_STRING);
+    return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_BASE_URL, EMPTY_STRING);
 }
 
-documentation{
-    Print the items in the given list
-
-    P{{list}} List to be printed
+function addToMap(map<string[]> m, string key, string value) {
+    if (m.hasKey(key)) {
+        string[] valueArray = m[key] but { () => []};
+        valueArray[lengthof valueArray] = value;
+    } else {
+        string[] valueArray = [value];
+        m[key] = valueArray;
+    }
 }
-function printList(string[] list) {
-    foreach item in list {
-        io:println(item);
+
+function printReport(map m) {
+    foreach key in m.keys() {
+        string githubOrgWithRepo = key.replace(API_BASE_URL + REPOS, EMPTY_STRING);
+        string githubOrg = githubOrgWithRepo.split(FORWARD_SLASH)[0];
+        string githubRepo = githubOrgWithRepo.split(FORWARD_SLASH)[1];
+        io:println("GitHub Org  : " + githubOrg);
+        io:println("GitHub Repo : " + githubRepo);
+        string[] arr = check <string[]>m[key];
+        foreach item in arr  {
+            io:println(item);
+        }
+        io:println("---");
     }
 }

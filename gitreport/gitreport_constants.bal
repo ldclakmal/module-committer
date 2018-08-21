@@ -15,10 +15,9 @@
 // under the License.
 
 // API URLs
-@final string GITHUB_URL = "https://github.com/";
-@final string API_URL = "https://api.github.com";
-@final string REPOS = "/repos";
-@final string PULLS = "/pulls";
+@final string API_BASE_URL = "https://api.github.com";
+@final string SEARCH_API = "/search/issues?q=";
+@final string REPOS = "/repos/";
 
 // API Response related parameters
 @final string LINK_HEADER = "Link";
@@ -28,18 +27,18 @@
 // Symbols
 @final string EMPTY_STRING = "";
 @final string SEMICOLON = ";";
+@final string PLUS = "+";
 @final string COMMA = ",";
-@final string QUESTION_MARK = "?";
 @final string FORWARD_SLASH = "/";
-@final string TIME_BOUNDARY = "T";
 
-// Conf parameter keys
-@final string GITHUB_TOKEN = "GITHUB_TOKEN";
+// PR status
+@final string STATE_ALL = "state:open+state:closed";
+@final string STATE_OPEN = "state:open";
+@final string STATE_CLOSED = "state:closed";
 
-// PR statuse
-@final string STATE_ALL = "state=all";
-@final string STATE_OPEN = "state=open";
-@final string STATE_CLOSED = "state=closed";
+// Issue type
+@final string TYPE_ISSUE = "type:issue";
+@final string TYPE_PR = "type:pr";
 
-// Time fortmats
-@final string DATE_FORMAT = "yyyy-MM-dd";
+// Author query param
+@final string AUTHOR = "author:";
