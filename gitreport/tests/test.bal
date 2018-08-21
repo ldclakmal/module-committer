@@ -32,3 +32,15 @@ function testPrintPullRequestList() {
         }
     }
 }
+
+@test:Config
+function testPrintIssueList() {
+    string githubUser = "ldclakmal";
+    var details = gitReportClient->printIssueList(githubUser, STATE_ALL);
+    match details {
+        () => {}
+        error err => {
+            test:assertFail(msg = err.message);
+        }
+    }
+}

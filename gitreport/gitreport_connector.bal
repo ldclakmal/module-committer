@@ -31,6 +31,14 @@ public type GitReportConnector object {
         R{{}} If success, returns nill, else returns an `error`
     }
     public function printPullRequestList(string githubUser, string state) returns error?;
+
+    documentation {
+        Prints the issue URLs for the given user and given state
+        P{{githubUser}} GitHub username
+        P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
+        R{{}} If success, returns nill, else returns an `error`
+    }
+    public function printIssueList(string githubUser, string state) returns error?;
 };
 
 function GitReportConnector::printPullRequestList(string githubUser, string state) returns error? {
@@ -47,6 +55,31 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
             io:println("• GitHub User   : " + githubUser);
             io:println("• State         : " + state);
             io:println("• Total PR Count: " + totalCount);
+            io:println("---");
+            printReport(responseMap);
+            return ();
+        }
+        error e => {
+            log:printError("Error while calling the GitHub REST API", err = e);
+            return e;
+        }
+    }
+}
+
+function GitReportConnector::printIssueList(string githubUser, string state) returns error? {
+
+    log:printInfo("Preparing GitHub issue report for user:" + githubUser + " & " + state);
+
+    map<string[]> responseMap;
+    string requestPath = SEARCH_API + TYPE_ISSUE + PLUS + AUTHOR + githubUser + PLUS + state;
+    var response = prepareMap(self.client, requestPath, responseMap);
+    match response {
+        () => {
+            io:println("---");
+            io:println("Report of the GitHub Issues");
+            io:println("• GitHub User       : " + githubUser);
+            io:println("• State             : " + state);
+            io:println("• Total Issue Count : " + totalCount);
             io:println("---");
             printReport(responseMap);
             return ();
