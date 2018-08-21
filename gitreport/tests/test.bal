@@ -19,45 +19,12 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/test;
 
-endpoint Client gitReportClient {
-    //clientConfig: {
-    //    auth: {
-    //        scheme: http:OAUTH2,
-            //accessToken: config:getAsString(GITHUB_TOKEN)
-        //}
-    //}
-};
+endpoint Client gitReportClient {};
 
 @test:Config
 function testGetPullRequestList() {
     string githubUser = "ldclakmal";
-    //string[] githubRepoList = [
-    //    "https://github.com/wso2/transport-http",
-    //    "https://github.com/ballerina-platform/ballerina-lang",
-    //    "https://github.com/ballerina-platform/ballerina-examples",
-    //    "https://github.com/ballerina-platform/ballerina-www",
-    //    "https://github.com/wso2-ballerina/package-twitter",
-    //    "https://github.com/wso2-ballerina/package-gmail",
-    //    "https://github.com/wso2-ballerina/package-salesforce",
-    //    "https://github.com/wso2-ballerina/package-googlespreadsheet",
-    //    "https://github.com/wso2-ballerina/package-twilio",
-    //    "https://github.com/wso2-ballerina/package-soap",
-    //    "https://github.com/wso2-ballerina/package-github",
-    //    "https://github.com/wso2-ballerina/package-scim2",
-    //    "https://github.com/wso2-ballerina/package-jira",
-    //    "https://github.com/wso2-ballerina/package-consul",
-    //    "https://github.com/wso2-ballerina/package-sonarqube",
-    //    "https://github.com/wso2-ballerina/package-kafka",
-    //    "https://github.com/ballerina-guides/ballerina-demo",
-    //    "https://github.com/ballerina-guides/ballerina-with-istio",
-    //    "https://github.com/ballerina-guides/salesforce-twilio-integration",
-    //    "https://github.com/ballerina-guides/sonarqube-github-integration",
-    //    "https://github.com/ballerina-guides/gmail-spreadsheet-integration",
-    //    "https://github.com/ballerina-guides/securing-restful-services-with-basic-auth"
-    //];
-    //string scanFromDate = "2018-01-01";
-
-    var details = gitReportClient->getPullRequestList(githubUser, STATE_CLOSED);
+    var details = gitReportClient->getPullRequestList(githubUser, STATE_ALL);
     match details {
         () => {}
         error err => {
