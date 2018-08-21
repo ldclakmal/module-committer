@@ -22,9 +22,9 @@ import ballerina/test;
 endpoint Client gitReportClient {};
 
 @test:Config
-function testGetPullRequestList() {
+function testPrintPullRequestList() {
     string githubUser = "ldclakmal";
-    var details = gitReportClient->getPullRequestList(githubUser, STATE_ALL);
+    var details = gitReportClient->printPullRequestList(githubUser, STATE_ALL);
     match details {
         () => {}
         error err => {

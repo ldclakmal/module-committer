@@ -33,7 +33,7 @@ endpoint gitreport:Client gitReportClient {};
 
 function main (string... args) {
     string githubUser = "ldclakmal";
-    var details = gitReportClient->getPullRequestList(githubUser, gitreport:STATE_ALL);
+    var details = gitReportClient->printPullRequestList(githubUser, gitreport:STATE_ALL);
     match details {
         () => {}
         error err => { io:println(err); }
