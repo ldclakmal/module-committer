@@ -17,7 +17,7 @@ The GitReport connector allows you to list all the pull requests you sent and li
 2. Import the GitReport package to your Ballerina program as follows.
 
     ```ballerina
-        import chanakal/gitreport;
+    import chanakal/gitreport;
     ```
 
 ## Sample code
