@@ -48,6 +48,13 @@ function getResourcePath(string link) returns string {
     return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_BASE_URL, EMPTY_STRING);
 }
 
+documentation{
+    Add the given key and value to the given map
+
+    P{{m}} Map, the value to be added
+    P{{key}} Key of the value
+    P{{value}} Actual value to be added
+}
 function addToMap(map<string[]> m, string key, string value) {
     if (m.hasKey(key)) {
         string[] valueArray = m[key] but { () => []};
@@ -58,6 +65,11 @@ function addToMap(map<string[]> m, string key, string value) {
     }
 }
 
+documentation{
+    Print the report with the given map
+
+    P{{m}} The data for the report as a map
+}
 function printReport(map m) {
     foreach key in m.keys() {
         string githubOrgWithRepo = key.replace(API_BASE_URL + REPOS, EMPTY_STRING);

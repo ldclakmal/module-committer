@@ -14,11 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.package sample;
 
-import ballerina/config;
 import ballerina/http;
 import ballerina/io;
 import ballerina/log;
-import ballerina/time;
 
 int totalCount = 0;
 
@@ -26,24 +24,23 @@ public type GitReportConnector object {
 
     public http:Client client;
 
-    //documentation {
-    //    Prints the pull request URLs for the given status and given set of GitHub repositories
-    //    P{{githubUser}} GitHub username
-    //    P{{githubRepoList}} GitHub repository URL list
-    //    P{{scanFromDate}} Starting date of the scan. It should be in `YYYY-MM-DD` format
-    //    P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
-    //    R{{}} If success, returns nill, else returns an `error`
-    //}
+    documentation {
+        Prints the pull request URLs for the given user and given state
+        P{{githubUser}} GitHub username
+        P{{status}} GitHub status (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
+        R{{}} If success, returns nill, else returns an `error`
+    }
     public function getPullRequestList(string githubUser, string state) returns error?;
 };
 
 function GitReportConnector::getPullRequestList(string githubUser, string state) returns error? {
 
-    string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
-    map<string[]> responseMap;
+    log:printInfo("Preparing GitHub pull request report for user:" + githubUser + " & " + state);
 
-    var r = doSomething(self.client, requestPath, responseMap);
-    match r {
+    map<string[]> responseMap;
+    string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
+    var response = preparePRMap(self.client, requestPath, responseMap);
+    match response {
         () => {
             io:println("---");
             io:println("Report of the GitHub Pull Requests");
@@ -61,7 +58,8 @@ function GitReportConnector::getPullRequestList(string githubUser, string state)
     }
 }
 
-function doSomething(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
+// Prepare PR map by recursively calling the GitHub search API
+function preparePRMap(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
     endpoint http:Client httpClient = client;
     var response = httpClient->get(requestPath);
     match response {
@@ -80,7 +78,7 @@ function doSomething(http:Client client, string requestPath, map<string[]> respo
                 string nextResourcePath = getNextResourcePath(linkHeader);
                 // Check for the next page of PR is exists.
                 if (nextResourcePath != EMPTY_STRING) {
-                    return doSomething(client, nextResourcePath, responseMap);
+                    return preparePRMap(client, nextResourcePath, responseMap);
                 }
             }
             return ();
