@@ -39,7 +39,7 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
 
     map<string[]> responseMap;
     string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
-    var response = preparePRMap(self.client, requestPath, responseMap);
+    var response = prepareMap(self.client, requestPath, responseMap);
     match response {
         () => {
             io:println("---");
@@ -58,33 +58,31 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
     }
 }
 
-// Prepare PR map by recursively calling the GitHub search API
-function preparePRMap(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
+// Prepare map by recursively calling the GitHub search API
+function prepareMap(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
     endpoint http:Client httpClient = client;
     var response = httpClient->get(requestPath);
     match response {
         http:Response res => {
             json payload = check res.getJsonPayload();
             totalCount = untaint check <int>payload.total_count;
-            json[] prList = check <json[]>payload.items;
-            foreach pr in prList {
-                string repoUrl = check <string>pr.repository_url;
-                string prUrl = check <string>pr.html_url;
-                addToMap(responseMap, repoUrl, prUrl);
+            json[] itemList = check <json[]>payload.items;
+            foreach item in itemList {
+                string repoUrl = check <string>item.repository_url;
+                string htmlUrl = check <string>item.html_url;
+                addToMap(responseMap, repoUrl, htmlUrl);
             }
 
             if (res.hasHeader(LINK_HEADER)) {
                 string linkHeader = res.getHeader(LINK_HEADER);
                 string nextResourcePath = getNextResourcePath(linkHeader);
-                // Check for the next page of PR is exists.
+                // Check for the next page exists.
                 if (nextResourcePath != EMPTY_STRING) {
-                    return preparePRMap(client, nextResourcePath, responseMap);
+                    return prepareMap(client, nextResourcePath, responseMap);
                 }
             }
             return ();
         }
-        error e => {
-            return e;
-        }
+        error e => return e;
     }
 }
