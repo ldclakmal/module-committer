@@ -25,7 +25,6 @@ The GitReport connector allows you to list all the pull requests you sent and li
 This code explains how to get the given state pull requests sent by the given username.
 
 ```ballerina
-import ballerina/http;
 import ballerina/io;
 import chanakal/gitreport;
 
@@ -44,7 +43,6 @@ function main (string... args) {
 This code explains how to get the given state issues, that the given username involves in.
 
 ```ballerina
-import ballerina/http;
 import ballerina/io;
 import chanakal/gitreport;
 
