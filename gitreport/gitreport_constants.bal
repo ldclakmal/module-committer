@@ -42,3 +42,4 @@
 
 // Author query param
 @final string AUTHOR = "author:";
+@final string INVOLVES = "involves:";

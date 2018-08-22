@@ -25,7 +25,7 @@ public type GitReportConnector object {
     public http:Client client;
 
     documentation {
-        Prints the pull request URLs for the given user and given state
+        Prints the pull request URLs of given state, that the given user created
         P{{githubUser}} GitHub username
         P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
@@ -33,7 +33,7 @@ public type GitReportConnector object {
     public function printPullRequestList(string githubUser, string state) returns error?;
 
     documentation {
-        Prints the issue URLs for the given user and given state
+        Prints the issue URLs of given state, that the given user involves in
         P{{githubUser}} GitHub username
         P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
@@ -71,7 +71,7 @@ function GitReportConnector::printIssueList(string githubUser, string state) ret
     log:printInfo("Preparing GitHub issue report for user:" + githubUser + " & " + state);
 
     map<string[]> responseMap;
-    string requestPath = SEARCH_API + TYPE_ISSUE + PLUS + AUTHOR + githubUser + PLUS + state;
+    string requestPath = SEARCH_API + TYPE_ISSUE + PLUS + INVOLVES + githubUser + PLUS + state;
     var response = prepareMap(self.client, requestPath, responseMap);
     match response {
         () => {
