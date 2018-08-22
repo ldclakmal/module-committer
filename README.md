@@ -38,3 +38,22 @@ function main (string... args) {
     }
 }
 ```
+
+This code explains how to get the given state issues, that the given username involves in.
+
+```ballerina
+import ballerina/http;
+import ballerina/io;
+import chanakal/gitreport;
+
+endpoint gitreport:Client gitReportClient {};
+
+function main (string... args) {
+    string githubUser = "ldclakmal";
+    var details = gitReportClient->printIssueList(githubUser, gitreport:STATE_ALL);
+    match details {
+        () => {}
+        error err => { io:println(err); }
+    }
+}
+```
