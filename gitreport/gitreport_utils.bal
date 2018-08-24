@@ -48,6 +48,13 @@ function getResourcePath(string link) returns string {
     return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_BASE_URL, EMPTY_STRING);
 }
 
+documentation{
+    Return the build query parametrs for GMail API
+
+    P{{userEmail}} User email for 'from' parameter
+    P{{excludeEmails}} List of emails to be excluded from 'to' parameter
+    R{{}} Built string with query parameters
+}
 function buildQueryParams(string userEmail, string[]? excludeEmails) returns string {
     string queryParams = "from:" + userEmail;
     match excludeEmails {
@@ -82,9 +89,9 @@ function addToMap(map<string[]> m, string key, string value) {
 }
 
 documentation{
-    Print the report with the given map
+    Print the given map
 
-    P{{m}} The data for the report as a map
+    P{{m}} The data as a map
 }
 function printMap(map m) {
     foreach key in m.keys() {
@@ -98,6 +105,11 @@ function printMap(map m) {
     }
 }
 
+documentation{
+    Print the given list
+
+    P{{m}} The data as a list
+}
 function printList(string[] list) {
     foreach item in list  {
         io:println(item);

@@ -28,6 +28,7 @@ public type GitReportConnector object {
 
     documentation {
         Prints the pull request URLs of given state, that the given user created
+
         P{{githubUser}} GitHub username
         P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
@@ -36,12 +37,21 @@ public type GitReportConnector object {
 
     documentation {
         Prints the issue URLs of given state, that the given user involves in
+
         P{{githubUser}} GitHub username
         P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
     }
     public function printIssueList(string githubUser, string state) returns error?;
 
+    documentation {
+        Prints the emails excluding the given given emails, that the given user involves in
+
+        P{{userEmail}} User email address
+        P{{maxListSize}} Maximum size of the email list. This can be any large integer value
+        P{{excludeEmails}} List of emails that need to be excluded from 'to' list
+        R{{}} If success, returns nill, else returns an `error`
+    }
     public function printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error?;
 };
 
