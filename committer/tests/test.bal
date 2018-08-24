@@ -19,12 +19,12 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/test;
 
-endpoint Client gitReportClient {};
+endpoint Client committerReportClient {};
 
 @test:Config
 function testPrintPullRequestList() {
     string githubUser = "ldclakmal";
-    var details = gitReportClient->printPullRequestList(githubUser, STATE_ALL);
+    var details = committerReportClient->printPullRequestList(githubUser, STATE_ALL);
     match details {
         () => {}
         error err => {
@@ -36,7 +36,7 @@ function testPrintPullRequestList() {
 @test:Config
 function testPrintIssueList() {
     string githubUser = "ldclakmal";
-    var details = gitReportClient->printIssueList(githubUser, STATE_ALL);
+    var details = committerReportClient->printIssueList(githubUser, STATE_ALL);
     match details {
         () => {}
         error err => {
@@ -50,7 +50,7 @@ function testPrintEmailList() {
     string email = "chanakal@wso2.com";
     string[] excludeEmails = ["vacation-group@wso2.com"];
     int maxListSize = 150;
-    var details = gitReportClient->printEmailList(email, 150, excludeEmails);
+    var details = committerReportClient->printEmailList(email, 150, excludeEmails);
     match details {
         () => {}
         error err => {

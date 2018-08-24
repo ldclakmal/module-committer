@@ -108,7 +108,7 @@ function printMap(map m) {
 documentation{
     Print the given list
 
-    P{{m}} The data as a list
+    P{{list}} The data as a list
 }
 function printList(string[] list) {
     foreach item in list  {

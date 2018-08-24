@@ -17,40 +17,40 @@
 import ballerina/http;
 
 documentation {
-    Object for GitReport endpoint.
-    F{{gitReportConfig}} Reference to `GitReportConfiguration` type
-    F{{gitReportConnector}} Reference to `GitReportConnector` type
+    Object for CommitterReport endpoint.
+    F{{committerReportConfig}} Reference to `CommitterReportConfiguration` type
+    F{{committerReportConnector}} Reference to `CommitterReportConnector` type
 }
 public type Client object {
 
-    public GitReportConfiguration gitReportConfig;
-    public GitReportConnector gitReportConnector = new;
+    public CommitterReportConfiguration committerReportConfig;
+    public CommitterReportConnector committerReportConnector = new;
 
     documentation {
-        Initialize GitReport endpoint.
-        P{{config}} GitReport configuraion
+        Initialize CommitterReport endpoint.
+        P{{config}} CommitterReport configuraion
     }
-    public function init(GitReportConfiguration config);
+    public function init(CommitterReportConfiguration config);
 
     documentation {
-        Returns GitReport connector.
-        R{{}} GitReport connector object
+        Returns CommitterReport connector.
+        R{{}} CommitterReport connector object
     }
-    public function getCallerActions() returns GitReportConnector;
+    public function getCallerActions() returns CommitterReportConnector;
 };
 
 documentation {
     F{{clientConfig}} The http client endpoint configuration
 }
-public type GitReportConfiguration record {
+public type CommitterReportConfiguration record {
     http:ClientEndpointConfig clientConfig;
 };
 
-function Client::init(GitReportConfiguration config) {
+function Client::init(CommitterReportConfiguration config) {
     config.clientConfig.url = API_BASE_URL;
-    self.gitReportConnector.client.init(config.clientConfig);
+    self.committerReportConnector.client.init(config.clientConfig);
 }
 
-function Client::getCallerActions() returns GitReportConnector {
-    return self.gitReportConnector;
+function Client::getCallerActions() returns CommitterReportConnector {
+    return self.committerReportConnector;
 }

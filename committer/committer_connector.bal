@@ -22,7 +22,7 @@ import wso2/gmail;
 
 int totalCount = 0;
 
-public type GitReportConnector object {
+public type CommitterReportConnector object {
 
     public http:Client client;
 
@@ -30,7 +30,7 @@ public type GitReportConnector object {
         Prints the pull request URLs of given state, that the given user created
 
         P{{githubUser}} GitHub username
-        P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
+        P{{state}} GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
     }
     public function printPullRequestList(string githubUser, string state) returns error?;
@@ -39,7 +39,7 @@ public type GitReportConnector object {
         Prints the issue URLs of given state, that the given user involves in
 
         P{{githubUser}} GitHub username
-        P{{state}} GitHub state (`gitreport:STATE_ALL`, `gitreport:STATE_OPEN`, `gitreport:STATE_CLOSED`)
+        P{{state}} GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
         R{{}} If success, returns nill, else returns an `error`
     }
     public function printIssueList(string githubUser, string state) returns error?;
@@ -56,7 +56,7 @@ public type GitReportConnector object {
 };
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
-function GitReportConnector::printPullRequestList(string githubUser, string state) returns error? {
+function CommitterReportConnector::printPullRequestList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub pull request report for user:" + githubUser + " & " + state);
 
@@ -82,7 +82,7 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
 }
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
-function GitReportConnector::printIssueList(string githubUser, string state) returns error? {
+function CommitterReportConnector::printIssueList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub issue report for user:" + githubUser + " & " + state);
 
@@ -107,7 +107,7 @@ function GitReportConnector::printIssueList(string githubUser, string state) ret
     }
 }
 
-function GitReportConnector::printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error? {
+function CommitterReportConnector::printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error? {
     endpoint gmail:Client gmailEP {
         clientConfig: {
             auth: {

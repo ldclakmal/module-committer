@@ -12,5 +12,5 @@ The WSO2 Committer Report connector allows you to list all the pull requests you
 Go to the root of the project and execute following commands.
 ```
 ballerina init
-ballerina test gitreport
+ballerina test committer
 ```
