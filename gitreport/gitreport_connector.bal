@@ -41,6 +41,7 @@ public type GitReportConnector object {
     public function printIssueList(string githubUser, string state) returns error?;
 };
 
+// API Doc: https://developer.github.com/v3/search/#search-issues
 function GitReportConnector::printPullRequestList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub pull request report for user:" + githubUser + " & " + state);
@@ -66,6 +67,7 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
     }
 }
 
+// API Doc: https://developer.github.com/v3/search/#search-issues
 function GitReportConnector::printIssueList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub issue report for user:" + githubUser + " & " + state);
