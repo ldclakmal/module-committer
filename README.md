@@ -12,7 +12,9 @@ The WSO2 Committer Report connector allows you to list all the pull requests you
 
 1. Refer the [Getting Started](https://ballerina.io/learn/getting-started/) guide to download and install Ballerina.
 
-2. Get OAuth 2.0 credentials for your GMail account. The following guide will help you get obtain the token. This is needed if and only if you are printing the email report.
+> NOTE: The steps 2 to 4 is needed if and only if you are printing the GMail related report. If you printing only the GitHub related reports, you can skip these steps.
+
+2. Get OAuth 2.0 credentials for your GMail account. The following guide will help you get obtain the token.
 
     [How to obtain Google OAuth2.0 Credentials](https://gist.github.com/ldclakmal/6c43ed7dfaa19d7eb0db324402d14102)
 
