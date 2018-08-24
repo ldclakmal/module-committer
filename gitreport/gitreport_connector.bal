@@ -126,7 +126,13 @@ function GitReportConnector::printEmailList(string userEmail, int maxListSize, s
                 var threadInfo = gmailEP->readThread(ME, <string>thread.threadId, format = gmail:FORMAT_METADATA,
                     metadataHeaders = [SUBJECT]);
                 match threadInfo {
-                    gmail:Thread t => io:println(t.messages[0].headerSubject);
+                    gmail:Thread t => {
+                        string subject = <string>t.messages[0].headerSubject;
+                        if (subject == EMPTY_STRING) {
+                            subject = NO_SUBJECT;
+                        }
+                        io:println(subject);
+                    }
                     gmail:GmailError e => return e;
                 }
             }

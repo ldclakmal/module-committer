@@ -49,3 +49,4 @@
 // ---- GMail related constants ----
 @final string ME = "me";
 @final string SUBJECT = "Subject";
+@final string NO_SUBJECT = "(no subject)";
