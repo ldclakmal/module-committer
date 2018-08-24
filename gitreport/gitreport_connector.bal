@@ -52,7 +52,7 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
 
     map<string[]> responseMap;
     string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
-    var response = prepareMap(self.client, requestPath, responseMap);
+    var response = prepareMapForGitHUb(self.client, requestPath, responseMap);
     match response {
         () => {
             io:println("---");
@@ -61,7 +61,7 @@ function GitReportConnector::printPullRequestList(string githubUser, string stat
             io:println("• State         : " + state);
             io:println("• Total PR Count: " + totalCount);
             io:println("---");
-            printReport(responseMap);
+            printMap(responseMap);
             return ();
         }
         error e => {
@@ -78,7 +78,7 @@ function GitReportConnector::printIssueList(string githubUser, string state) ret
 
     map<string[]> responseMap;
     string requestPath = SEARCH_API + TYPE_ISSUE + PLUS + INVOLVES + githubUser + PLUS + state;
-    var response = prepareMap(self.client, requestPath, responseMap);
+    var response = prepareMapForGitHUb(self.client, requestPath, responseMap);
     match response {
         () => {
             io:println("---");
@@ -87,7 +87,7 @@ function GitReportConnector::printIssueList(string githubUser, string state) ret
             io:println("• State             : " + state);
             io:println("• Total Issue Count : " + totalCount);
             io:println("---");
-            printReport(responseMap);
+            printMap(responseMap);
             return ();
         }
         error e => {
@@ -109,24 +109,20 @@ function GitReportConnector::printEmailList(string userEmail, int maxListSize, s
         }
     };
 
-    string queryParams = "from:" + userEmail;
-    match excludeEmails {
-        string[] list => {
-            queryParams += " to:(";
-            foreach email in list {
-                queryParams += " -" + email;
-            }
-            queryParams += ")";
-        }
-        () => {}
-    }
-    queryParams += " -in:chats";
+    log:printInfo("Preparing EMail report for user:" + userEmail);
 
+    string queryParams = buildQueryParams(userEmail, excludeEmails);
     gmail:MsgSearchFilter searchFilter = { includeSpamTrash: false, maxResults: <string>maxListSize, q:queryParams };
     var threadList = gmailEP->listThreads(ME, filter = searchFilter);
     match threadList {
         gmail:ThreadListPage list => {
-            foreach thread in list.threads {
+            io:println("---");
+            io:println("Report of the EMails");
+            io:println("• EMail User        : " + userEmail);
+            io:println("• Search Filter     : " + queryParams);
+            io:println("• Total Email Count : " + list.resultSizeEstimate);
+            io:println("---");
+            foreach i, thread in list.threads {
                 var threadInfo = gmailEP->readThread(ME, <string>thread.threadId, format = gmail:FORMAT_METADATA,
                     metadataHeaders = [SUBJECT]);
                 match threadInfo {
@@ -134,6 +130,7 @@ function GitReportConnector::printEmailList(string userEmail, int maxListSize, s
                     gmail:GmailError e => return e;
                 }
             }
+            io:println("---");
             return ();
         }
         gmail:GmailError e => return e;
@@ -141,7 +138,7 @@ function GitReportConnector::printEmailList(string userEmail, int maxListSize, s
 }
 
 // Prepare map by recursively calling the GitHub search API
-function prepareMap(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
+function prepareMapForGitHUb(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
     endpoint http:Client httpClient = client;
     var response = httpClient->get(requestPath);
     match response {
@@ -160,7 +157,7 @@ function prepareMap(http:Client client, string requestPath, map<string[]> respon
                 string nextResourcePath = getNextResourcePath(linkHeader);
                 // Check for the next page exists.
                 if (nextResourcePath != EMPTY_STRING) {
-                    return prepareMap(client, nextResourcePath, responseMap);
+                    return prepareMapForGitHUb(client, nextResourcePath, responseMap);
                 }
             }
             return ();

@@ -48,6 +48,22 @@ function getResourcePath(string link) returns string {
     return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_BASE_URL, EMPTY_STRING);
 }
 
+function buildQueryParams(string userEmail, string[]? excludeEmails) returns string {
+    string queryParams = "from:" + userEmail;
+    match excludeEmails {
+        string[] list => {
+            queryParams += " to:(";
+            foreach email in list {
+                queryParams += " -" + email;
+            }
+            queryParams += ")";
+        }
+        () => {}
+    }
+    queryParams += " -in:chats";
+    return queryParams;
+}
+
 documentation{
     Add the given key and value to the given map
 
@@ -70,17 +86,21 @@ documentation{
 
     P{{m}} The data for the report as a map
 }
-function printReport(map m) {
+function printMap(map m) {
     foreach key in m.keys() {
         string githubOrgWithRepo = key.replace(API_BASE_URL + REPOS, EMPTY_STRING);
         string githubOrg = githubOrgWithRepo.split(FORWARD_SLASH)[0];
         string githubRepo = githubOrgWithRepo.split(FORWARD_SLASH)[1];
         io:println("GitHub Org  : " + githubOrg);
         io:println("GitHub Repo : " + githubRepo);
-        string[] arr = check <string[]>m[key];
-        foreach item in arr  {
-            io:println(item);
-        }
-        io:println("---");
+        string[] list = check <string[]>m[key];
+        printList(list);
     }
+}
+
+function printList(string[] list) {
+    foreach item in list  {
+        io:println(item);
+    }
+    io:println("---");
 }
