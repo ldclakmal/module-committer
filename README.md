@@ -1,12 +1,12 @@
-# Package GitReport
+# Package WSO2 Committer Report
 
-The GitReport connector allows you to list all the pull requests you sent and list all the issues you created, commented, etc.
+The WSO2 Committer Report connector allows you to list all the pull requests you sent, list all the issues you get involved and list all the emails you get involved.
 
 ## Compatibility
 
 | Ballerina Version  |
 |:------------------:|
-| 0.981.0            |
+| 0.981.1            |
 
 ## Getting started
 
@@ -52,6 +52,28 @@ function main (string... args) {
     match details {
         () => {}
         error err => { io:println(err); }
+    }
+}
+```
+
+This code explains how to get the emails, that the given user involves in.
+
+```ballerina
+import ballerina/io;
+import chanakal/gitreport;
+
+endpoint gitreport:Client gitReportClient {};
+
+function main (string... args) {
+    string email = "chanakal@wso2.com";
+    string[] excludeEmails = ["vacation-group@wso2.com"];
+    int maxListSize = 150;
+    var details = gitReportClient->printEmailList(email, 150, excludeEmails);
+    match details {
+        () => {}
+        error err => {
+            test:assertFail(msg = err.message);
+        }
     }
 }
 ```
