@@ -123,12 +123,12 @@ function GitReportConnector::printEmailList(string userEmail, int maxListSize, s
     queryParams += " -in:chats";
 
     gmail:MsgSearchFilter searchFilter = { includeSpamTrash: false, maxResults: <string>maxListSize, q:queryParams };
-    var threadList = gmailEP->listThreads("me", filter = searchFilter);
+    var threadList = gmailEP->listThreads(ME, filter = searchFilter);
     match threadList {
         gmail:ThreadListPage list => {
             foreach thread in list.threads {
-                var threadInfo = gmailEP->readThread("me", <string>thread.threadId, format = gmail:FORMAT_METADATA,
-                    metadataHeaders = ["Subject"]);
+                var threadInfo = gmailEP->readThread(ME, <string>thread.threadId, format = gmail:FORMAT_METADATA,
+                    metadataHeaders = [SUBJECT]);
                 match threadInfo {
                     gmail:Thread t => io:println(t.messages[0].headerSubject);
                     gmail:GmailError e => return e;

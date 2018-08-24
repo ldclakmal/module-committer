@@ -14,6 +14,15 @@
 // specific language governing permissions and limitations
 // under the License.
 
+// Symbols
+@final string EMPTY_STRING = "";
+@final string SEMICOLON = ";";
+@final string PLUS = "+";
+@final string COMMA = ",";
+@final string FORWARD_SLASH = "/";
+
+// ---- GitHub related constants ----
+
 // API URLs
 @final string API_BASE_URL = "https://api.github.com";
 @final string SEARCH_API = "/search/issues?q=";
@@ -23,13 +32,6 @@
 @final string LINK_HEADER = "Link";
 @final string NEXT_REALTION = "rel=\"next\"";
 @final string LAST_RELATION = "rel=\"last\"";
-
-// Symbols
-@final string EMPTY_STRING = "";
-@final string SEMICOLON = ";";
-@final string PLUS = "+";
-@final string COMMA = ",";
-@final string FORWARD_SLASH = "/";
 
 // PR status
 @final string STATE_ALL = "state:open+state:closed";
@@ -43,3 +45,7 @@
 // Author query param
 @final string AUTHOR = "author:";
 @final string INVOLVES = "involves:";
+
+// ---- GMail related constants ----
+@final string ME = "me";
+@final string SUBJECT = "Subject";
