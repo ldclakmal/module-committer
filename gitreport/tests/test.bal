@@ -44,3 +44,17 @@ function testPrintIssueList() {
         }
     }
 }
+
+@test:Config
+function testPrintEmailList() {
+    string email = "chanakal@wso2.com";
+    string[] excludeEmails = ["vacation-group@wso2.com"];
+    int maxListSize = 150;
+    var details = gitReportClient->printEmailList(email, 150, excludeEmails);
+    match details {
+        () => {}
+        error err => {
+            test:assertFail(msg = err.message);
+        }
+    }
+}

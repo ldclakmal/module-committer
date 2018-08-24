@@ -14,9 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.package sample;
 
+import ballerina/config;
 import ballerina/http;
 import ballerina/io;
 import ballerina/log;
+import wso2/gmail;
 
 int totalCount = 0;
 
@@ -39,6 +41,8 @@ public type GitReportConnector object {
         R{{}} If success, returns nill, else returns an `error`
     }
     public function printIssueList(string githubUser, string state) returns error?;
+
+    public function printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error?;
 };
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
@@ -90,6 +94,49 @@ function GitReportConnector::printIssueList(string githubUser, string state) ret
             log:printError("Error while calling the GitHub REST API", err = e);
             return e;
         }
+    }
+}
+
+function GitReportConnector::printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error? {
+    endpoint gmail:Client gmailEP {
+        clientConfig: {
+            auth: {
+                accessToken: config:getAsString("ACCESS_TOKEN"),
+                clientId: config:getAsString("CLIENT_ID"),
+                clientSecret: config:getAsString("CLIENT_SECRET"),
+                refreshToken: config:getAsString("REFRESH_TOKEN")
+            }
+        }
+    };
+
+    string queryParams = "from:" + userEmail;
+    match excludeEmails {
+        string[] list => {
+            queryParams += " to:(";
+            foreach email in list {
+                queryParams += " -" + email;
+            }
+            queryParams += ")";
+        }
+        () => {}
+    }
+    queryParams += " -in:chats";
+
+    gmail:MsgSearchFilter searchFilter = { includeSpamTrash: false, maxResults: <string>maxListSize, q:queryParams };
+    var threadList = gmailEP->listThreads("me", filter = searchFilter);
+    match threadList {
+        gmail:ThreadListPage list => {
+            foreach thread in list.threads {
+                var threadInfo = gmailEP->readThread("me", <string>thread.threadId, format = gmail:FORMAT_METADATA,
+                    metadataHeaders = ["Subject"]);
+                match threadInfo {
+                    gmail:Thread t => io:println(t.messages[0].headerSubject);
+                    gmail:GmailError e => return e;
+                }
+            }
+            return ();
+        }
+        gmail:GmailError e => return e;
     }
 }
 
