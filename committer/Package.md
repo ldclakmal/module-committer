@@ -53,10 +53,13 @@ endpoint committer:Client committerReportClient {};
 
 function main (string... args) {
     string githubUser = "ldclakmal";
-    var details = committerReportClient->printPullRequestList(githubUser, committer:STATE_ALL);
+    var details = committerReportClient->printPullRequestList(githubUser,
+                            committer:STATE_ALL);
     match details {
         () => {}
-        error err => { io:println(err); }
+        error err => {
+            io:println(err);
+        }
     }
 }
 ```
@@ -71,10 +74,13 @@ endpoint committer:Client committerReportClient {};
 
 function main (string... args) {
     string githubUser = "ldclakmal";
-    var details = committerReportClient->printIssueList(githubUser, committer:STATE_ALL);
+    var details = committerReportClient->printIssueList(githubUser,
+                        committer:STATE_ALL);
     match details {
         () => {}
-        error err => { io:println(err); }
+        error err => {
+            io:println(err);
+        }
     }
 }
 ```
@@ -94,7 +100,9 @@ function main (string... args) {
     var details = committerReportClient->printEmailList(userEmail, 150, excludeEmails);
     match details {
         () => {}
-        error err => { io:println(err); }
+        error err => {
+            io:println(err);
+        }
     }
 }
 ```

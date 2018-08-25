@@ -54,7 +54,9 @@ function main (string... args) {
     var details = committerReportClient->printPullRequestList(githubUser, committer:STATE_ALL);
     match details {
         () => {}
-        error err => { io:println(err); }
+        error err => {
+            io:println(err);
+        }
     }
 }
 ```
@@ -72,7 +74,9 @@ function main (string... args) {
     var details = committerReportClient->printIssueList(githubUser, committer:STATE_ALL);
     match details {
         () => {}
-        error err => { io:println(err); }
+        error err => {
+            io:println(err);
+        }
     }
 }
 ```
@@ -92,7 +96,9 @@ function main (string... args) {
     var details = committerReportClient->printEmailList(userEmail, 150, excludeEmails);
     match details {
         () => {}
-        error err => { io:println(err); }
+        error err => {
+            io:println(err);
+        }
     }
 }
 ```
