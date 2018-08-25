@@ -34,9 +34,9 @@
 @final string LAST_RELATION = "rel=\"last\"";
 
 // PR status
-@final string STATE_ALL = "state:open+state:closed";
-@final string STATE_OPEN = "state:open";
-@final string STATE_CLOSED = "state:closed";
+@final public string STATE_ALL = "state:open+state:closed";
+@final public string STATE_OPEN = "state:open";
+@final public string STATE_CLOSED = "state:closed";
 
 // Issue type
 @final string TYPE_ISSUE = "type:issue";
