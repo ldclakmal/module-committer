@@ -1,7 +1,7 @@
 [project]
 org-name = "chanakal"
-version = "0.9.3"
+version = "0.9.4"
 authors = ["Chanaka Lakmal"]
-keywords = ["committer-report", "git-report", "gmail-report", "github", "pull-requests", "issues", "gmail", "email"]
-repository = "https://github.com/ldclakmal/package-wso2-committer-report"
+keywords = ["committer-report", "github", "pull-requests", "issues", "gmail", "email"]
+repository = "https://github.com/ldclakmal/package-committer"
 license = "Apache-2.0"
