@@ -47,6 +47,8 @@
 @final string INVOLVES = "involves:";
 
 // ---- GMail related constants ----
+@final string MAX_LIST_SIZE = "1000";
 @final string ME = "me";
 @final string SUBJECT = "Subject";
+@final string INBOX = "INBOX";
 @final string NO_SUBJECT = "(no subject)";

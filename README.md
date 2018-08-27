@@ -92,8 +92,7 @@ endpoint committer:Client committerReportClient {};
 function main (string... args) {
     string userEmail = "chanakal@wso2.com";
     string[] excludeEmails = ["vacation-group@wso2.com"];
-    int maxListSize = 150;
-    var details = committerReportClient->printEmailList(userEmail, 150, excludeEmails);
+    var details = committerReportClient->printEmailList(userEmail, excludeEmails);
     match details {
         () => {}
         error err => {

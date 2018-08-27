@@ -48,11 +48,10 @@ public type CommitterReportConnector object {
         Prints the emails excluding the given given emails, that the given user involves in
 
         P{{userEmail}} User email address
-        P{{maxListSize}} Maximum size of the email list. This can be any large integer value
         P{{excludeEmails}} List of emails that need to be excluded from 'to' list
         R{{}} If success, returns nill, else returns an `error`
     }
-    public function printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error?;
+    public function printEmailList(string userEmail, string[]? excludeEmails) returns error?;
 };
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
@@ -107,7 +106,7 @@ function CommitterReportConnector::printIssueList(string githubUser, string stat
     }
 }
 
-function CommitterReportConnector::printEmailList(string userEmail, int maxListSize, string[]? excludeEmails)
+function CommitterReportConnector::printEmailList(string userEmail, string[]? excludeEmails)
                                        returns error? {
     endpoint gmail:Client gmailEP {
         clientConfig: {
@@ -123,7 +122,7 @@ function CommitterReportConnector::printEmailList(string userEmail, int maxListS
     log:printInfo("Preparing EMail report for user:" + userEmail);
 
     string queryParams = buildQueryParams(userEmail, excludeEmails);
-    gmail:MsgSearchFilter searchFilter = { includeSpamTrash: false, maxResults: <string>maxListSize, q:queryParams };
+    gmail:MsgSearchFilter searchFilter = { includeSpamTrash: false, maxResults: MAX_LIST_SIZE, q: queryParams };
     var threadList = gmailEP->listThreads(ME, filter = searchFilter);
     match threadList {
         gmail:ThreadListPage list => {
@@ -148,7 +147,7 @@ function CommitterReportConnector::printEmailList(string userEmail, int maxListS
                         string[] labels = t.messages[0].labelIds;
                         boolean isInitiatedEmail = false;
                         foreach label in labels {
-                            if (label.contains("INBOX")) {
+                            if (label.contains(INBOX)) {
                                 isInitiatedEmail = true;
                                 break;
                             }
@@ -163,7 +162,7 @@ function CommitterReportConnector::printEmailList(string userEmail, int maxListS
                     gmail:GmailError e => return e;
                 }
             }
-            io:println("✔\n---");
+            io:println(" ✔\n---");
             printGmailDataList(initiatedEmails, "INITIATED EMAILS");
             printGmailDataList(contributedEmails, "CONTRIBUTED EMAILS");
             return ();
