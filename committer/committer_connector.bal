@@ -71,7 +71,7 @@ function CommitterReportConnector::printPullRequestList(string githubUser, strin
             io:println("• State         : " + state);
             io:println("• Total PR Count: " + totalCount);
             io:println("---");
-            printMap(responseMap);
+            printGitHubDataMap(responseMap);
             return ();
         }
         error e => {
@@ -97,7 +97,7 @@ function CommitterReportConnector::printIssueList(string githubUser, string stat
             io:println("• State             : " + state);
             io:println("• Total Issue Count : " + totalCount);
             io:println("---");
-            printMap(responseMap);
+            printGitHubDataMap(responseMap);
             return ();
         }
         error e => {
@@ -107,7 +107,8 @@ function CommitterReportConnector::printIssueList(string githubUser, string stat
     }
 }
 
-function CommitterReportConnector::printEmailList(string userEmail, int maxListSize, string[]? excludeEmails) returns error? {
+function CommitterReportConnector::printEmailList(string userEmail, int maxListSize, string[]? excludeEmails)
+                                       returns error? {
     endpoint gmail:Client gmailEP {
         clientConfig: {
             auth: {
@@ -132,6 +133,9 @@ function CommitterReportConnector::printEmailList(string userEmail, int maxListS
             io:println("• Search Filter     : " + queryParams);
             io:println("• Total Email Count : " + list.resultSizeEstimate);
             io:println("---");
+            io:print("Processing .");
+            string[] initiatedEmails;
+            string[] contributedEmails;
             foreach i, thread in list.threads {
                 var threadInfo = gmailEP->readThread(ME, <string>thread.threadId, format = gmail:FORMAT_METADATA,
                     metadataHeaders = [SUBJECT]);
@@ -141,12 +145,27 @@ function CommitterReportConnector::printEmailList(string userEmail, int maxListS
                         if (subject == EMPTY_STRING) {
                             subject = NO_SUBJECT;
                         }
-                        io:println(subject);
+                        string[] labels = t.messages[0].labelIds;
+                        boolean isInitiatedEmail = false;
+                        foreach label in labels {
+                            if (label.contains("INBOX")) {
+                                isInitiatedEmail = true;
+                                break;
+                            }
+                        }
+                        if (isInitiatedEmail){
+                            initiatedEmails[lengthof initiatedEmails] = subject;
+                        } else {
+                            contributedEmails[lengthof contributedEmails] = subject;
+                        }
+                        io:print(".");
                     }
                     gmail:GmailError e => return e;
                 }
             }
-            io:println("---");
+            io:println("✔\n---");
+            printGmailDataList(initiatedEmails, "INITIATED EMAILS");
+            printGmailDataList(contributedEmails, "CONTRIBUTED EMAILS");
             return ();
         }
         gmail:GmailError e => return e;

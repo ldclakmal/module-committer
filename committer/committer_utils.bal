@@ -89,11 +89,11 @@ function addToMap(map<string[]> m, string key, string value) {
 }
 
 documentation{
-    Print the given map
+    Print the given GitHub data map
 
     P{{m}} The data as a map
 }
-function printMap(map m) {
+function printGitHubDataMap(map m) {
     foreach key in m.keys() {
         string githubOrgWithRepo = key.replace(API_BASE_URL + REPOS, EMPTY_STRING);
         string githubOrg = githubOrgWithRepo.split(FORWARD_SLASH)[0];
@@ -101,16 +101,21 @@ function printMap(map m) {
         io:println("GitHub Org  : " + githubOrg);
         io:println("GitHub Repo : " + githubRepo);
         string[] list = check <string[]>m[key];
-        printList(list);
+        foreach item in list  {
+            io:println(item);
+        }
+        io:println("---");
     }
 }
 
 documentation{
-    Print the given list
+    Print the given GMail data list
 
     P{{list}} The data as a list
 }
-function printList(string[] list) {
+function printGmailDataList(string[] list, string category) {
+    io:println("Category: " + category);
+    io:println("*****************************");
     foreach item in list  {
         io:println(item);
     }
