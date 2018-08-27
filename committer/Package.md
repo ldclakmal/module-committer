@@ -85,7 +85,7 @@ function main (string... args) {
 }
 ```
 
-This code explains how to get the emails, that the given user involves in.
+This code explains how to get the emails, that the given user involves in. This prints under two categories as 'Initiated Emails' and 'Contributed Emails'
 
 ```ballerina
 import ballerina/io;
