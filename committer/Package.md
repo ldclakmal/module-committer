@@ -1,4 +1,4 @@
-Generates WSO2 Committer Request Report from Ballerina.
+Generates WSO2 Committer Report from Ballerina.
 
 # Package Overview
 
