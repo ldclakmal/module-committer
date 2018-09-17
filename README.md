@@ -8,38 +8,54 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 |:------------------:|
 | 0.981.1            |
 
-## Getting started
+## Getting Started
+
+#### Setup GitHub account
+
+- If you want to print GitHub report, you do not need to setup anything at this stage.
+
+#### Setup GMail account
+
+- If you want to print GMail report, you have to follow these steps.
+
+    1. Get OAuth 2.0 credentials for your GMail account. The following guide will help you get obtain the token.
+
+        [How to obtain Google OAuth2.0 Credentials](https://gist.github.com/ldclakmal/6c43ed7dfaa19d7eb0db324402d14102)
+
+    2. Create a new Ballerina project by executing the following command at package root.
+
+        ```shell
+        $ ballerina init
+        ```
+
+    3. Create a `ballerina.conf` file at package root and add the obtained token as follows.
+
+       ```ballerina.conf
+       ACCESS_TOKEN="your_access_token"
+       CLIENT_ID="your_client_id"
+       CLIENT_SECRET="your_client_secret"
+       REFRESH_TOKEN="your_refresh_token"
+       ```
+
+## How to Run
 
 1. Refer the [Getting Started](https://ballerina.io/learn/getting-started/) guide to download and install Ballerina.
 
-> NOTE: The steps 2 to 4 is needed if and only if you are printing the GMail related report. If you printing only the GitHub related reports, you can skip these steps.
-
-2. Get OAuth 2.0 credentials for your GMail account. The following guide will help you get obtain the token.
-
-    [How to obtain Google OAuth2.0 Credentials](https://gist.github.com/ldclakmal/6c43ed7dfaa19d7eb0db324402d14102)
-
-3. Create a new Ballerina project by executing the following command at package root.
-
-    ```shell
-    $ ballerina init
-    ```
-
-4. Create a `ballerina.conf` file at package root and add the obtained token as follows.
-
-   ```ballerina.conf
-   ACCESS_TOKEN="your_access_token"
-   CLIENT_ID="your_client_id"
-   CLIENT_SECRET="your_client_secret"
-   REFRESH_TOKEN="your_refresh_token"
-   ```
-
-5. Import the WSO2 Committer Report package to your Ballerina program as follows.
+2. Import the WSO2 Committer Report package to your Ballerina program as follows.
 
     ```ballerina
     import chanakal/committer;
     ```
 
-## Sample code
+3. Call the action that you need to print the report. Following **sample code** section will help you to implement the necessary report.
+
+4. Run your program as follows.
+
+    ```ballerina
+    ballerina run your-program.bal
+    ```
+
+#### Sample codes
 
 This code explains how to get the given state pull requests sent by the given username.
 
