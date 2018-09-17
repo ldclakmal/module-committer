@@ -54,10 +54,10 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 4. Run your program as follows.
 
     ```ballerina
-    ballerina run your-program.bal
+    ballerina run your-program.bal -c /path/to/conf/file
     ```
 
-#### Sample codes
+#### Sample Code
 
 This code explains how to get the given state pull requests sent by the given username.
 
@@ -121,3 +121,14 @@ function main (string... args) {
     }
 }
 ```
+
+#### Sample Program
+
+- Please refer following URL for the full implementation.
+https://github.com/ldclakmal/ballerina-samples/blob/master/connectors/committer.bal
+
+- Run this program as follows:
+
+    ```ballerina
+    ballerina run committer.bal -c /path/to/conf/file
+    ```
