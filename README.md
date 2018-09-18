@@ -108,8 +108,8 @@ import chanakal/committer;
 endpoint committer:Client committerReportClient {};
 
 function main (string... args) {
-    string userEmail = "chanakal@wso2.com";
-    string[] excludeEmails = ["vacation-group@wso2.com"];
+    string userEmail = "chanakal@abc.com";
+    string[] excludeEmails = ["mygroup@abc.com"];
     var details = committerReportClient->printEmailList(userEmail, excludeEmails);
     match details {
         () => {}

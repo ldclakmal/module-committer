@@ -47,8 +47,8 @@ function testPrintIssueList() {
 
 @test:Config
 function testPrintEmailList() {
-    string userEmail = "chanakal@wso2.com";
-    string[] excludeEmails = ["vacation-group@wso2.com"];
+    string userEmail = "chanakal@abc.com";
+    string[] excludeEmails = ["mygroup@abc.com"];
     var details = committerReportClient->printEmailList(userEmail, excludeEmails);
     match details {
         () => {}
