@@ -16,32 +16,30 @@
 
 import ballerina/http;
 
-documentation {
-    Object for CommitterReport endpoint.
-    F{{committerReportConfig}} Reference to `CommitterReportConfiguration` type
-    F{{committerReportConnector}} Reference to `CommitterReportConnector` type
-}
+# Object for CommitterReport endpoint.
+#
+# + committerReportConfig - Reference to `CommitterReportConfiguration` type
+# + committerReportConnector - Reference to `CommitterReportConnector` type
 public type Client object {
 
     public CommitterReportConfiguration committerReportConfig;
     public CommitterReportConnector committerReportConnector = new;
 
-    documentation {
-        Initialize CommitterReport endpoint.
-        P{{config}} CommitterReport configuraion
-    }
+
+    # Initialize CommitterReport endpoint.
+    #
+    # + config - CommitterReport configuraion
     public function init(CommitterReportConfiguration config);
 
-    documentation {
-        Returns CommitterReport connector.
-        R{{}} CommitterReport connector object
-    }
+    # Returns CommitterReport connector.
+    #
+    # + return - CommitterReport connector object
     public function getCallerActions() returns CommitterReportConnector;
 };
 
-documentation {
-    F{{clientConfig}} The http client endpoint configuration
-}
+# Object for committer report configuration.
+#
+# + clientConfig - The http client endpoint configuration
 public type CommitterReportConfiguration record {
     http:ClientEndpointConfig clientConfig;
 };

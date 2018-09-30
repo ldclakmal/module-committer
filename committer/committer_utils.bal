@@ -16,15 +16,12 @@
 
 import ballerina/io;
 
-documentation{
-    Return the untainted next URL after clearing the given link header with other symbols. If next URL is not given,
-    returns an empty string, which represents the last page
-    `Link: <https://api.github.com/resource?page=2>; rel="next",
-      <https://api.github.com/resource?page=5>; rel="last"`
-
-    P{{linkHeader}} Link header of the request
-    R{{}} Next URL and Last URL
-}
+# Return the untainted next URL after clearing the given link header with other symbols. If next URL is not given,
+# returns an empty string, which represents the last page
+# `Link: <https://api.github.com/resource?page=2>; rel="next", <https://api.github.com/resource?page=5>; rel="last"`
+#
+# + linkHeader - Link header of the request
+# + return - Next URL and Last URL
 function getNextResourcePath(string linkHeader) returns @untainted string {
     string[] urlWithRelationArray = linkHeader.split(COMMA);
     string nextUrl;
@@ -37,24 +34,20 @@ function getNextResourcePath(string linkHeader) returns @untainted string {
     return nextUrl;
 }
 
-documentation{
-    Return the resource path after clearing the given URL with other symbols
-
-    P{{link}} Link URL with other parameters
-    R{{}} Cleaned resource path
-}
+# Return the resource path after clearing the given URL with other symbols
+#
+# + link - Link URL with other parameters
+# + return - Cleaned resource path
 function getResourcePath(string link) returns string {
     string urlWithBrackets = link.split(SEMICOLON)[0].trim();
     return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(API_BASE_URL, EMPTY_STRING);
 }
 
-documentation{
-    Return the build query parametrs for GMail API
-
-    P{{userEmail}} User email for 'from' parameter
-    P{{excludeEmails}} List of emails to be excluded from 'to' parameter
-    R{{}} Built string with query parameters
-}
+# Return the build query parametrs for GMail API
+#
+# + userEmail - User email for 'from' parameter
+# + excludeEmails - List of emails to be excluded from 'to' parameter
+# + return - Built string with query parameters
 function buildQueryParams(string userEmail, string[]? excludeEmails) returns string {
     string queryParams = "from:" + userEmail;
     match excludeEmails {
@@ -71,13 +64,11 @@ function buildQueryParams(string userEmail, string[]? excludeEmails) returns str
     return queryParams;
 }
 
-documentation{
-    Add the given key and value to the given map
-
-    P{{m}} Map, the value to be added
-    P{{key}} Key of the value
-    P{{value}} Actual value to be added
-}
+# Add the given key and value to the given map
+#
+# + m - Map, the value to be added
+# + key - Key of the value
+# + value - Actual value to be added
 function addToMap(map<string[]> m, string key, string value) {
     if (m.hasKey(key)) {
         string[] valueArray = m[key] but { () => []};
@@ -88,11 +79,9 @@ function addToMap(map<string[]> m, string key, string value) {
     }
 }
 
-documentation{
-    Print the given GitHub data map
-
-    P{{m}} The data as a map
-}
+# Print the given GitHub data map
+#
+# + m - The data as a map
 function printGitHubDataMap(map m) {
     foreach key in m.keys() {
         string githubOrgWithRepo = key.replace(API_BASE_URL + REPOS, EMPTY_STRING);
@@ -108,11 +97,9 @@ function printGitHubDataMap(map m) {
     }
 }
 
-documentation{
-    Print the given GMail data list
-
-    P{{list}} The data as a list
-}
+# Print the given GMail data list
+#
+# + list - The data as a list
 function printGmailDataList(string[] list, string category) {
     io:println("Category: " + category);
     io:println("*****************************");

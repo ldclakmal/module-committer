@@ -26,31 +26,25 @@ public type CommitterReportConnector object {
 
     public http:Client client;
 
-    documentation {
-        Prints the pull request URLs of given state, that the given user created
-
-        P{{githubUser}} GitHub username
-        P{{state}} GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
-        R{{}} If success, returns nill, else returns an `error`
-    }
+    # Prints the pull request URLs of given state, that the given user created
+    #
+    # + githubUser - GitHub username
+    # + state - GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
+    # + return - If success, returns nill, else returns an `error`
     public function printPullRequestList(string githubUser, string state) returns error?;
 
-    documentation {
-        Prints the issue URLs of given state, that the given user involves in
-
-        P{{githubUser}} GitHub username
-        P{{state}} GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
-        R{{}} If success, returns nill, else returns an `error`
-    }
+    # Prints the issue URLs of given state, that the given user involves in
+    #
+    # + githubUser - GitHub username
+    # + state - GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
+    # + return - If success, returns nill, else returns an `error`
     public function printIssueList(string githubUser, string state) returns error?;
 
-    documentation {
-        Prints the emails excluding the given given emails, that the given user involves in
-
-        P{{userEmail}} User email address
-        P{{excludeEmails}} List of emails that need to be excluded from 'to' list
-        R{{}} If success, returns nill, else returns an `error`
-    }
+    # Prints the emails excluding the given given emails, that the given user involves in
+    #
+    # + userEmail - User email address
+    # + excludeEmails - List of emails that need to be excluded from 'to' list
+    # + return - If success, returns nill, else returns an `error`
     public function printEmailList(string userEmail, string[]? excludeEmails) returns error?;
 };
 
