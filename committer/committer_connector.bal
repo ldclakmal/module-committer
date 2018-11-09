@@ -105,6 +105,7 @@ function CommitterReportConnector::printEmailList(string userEmail, string[]? ex
     endpoint gmail:Client gmailEP {
         clientConfig: {
             auth: {
+                scheme: http:OAUTH2,
                 accessToken: config:getAsString("ACCESS_TOKEN"),
                 clientId: config:getAsString("CLIENT_ID"),
                 clientSecret: config:getAsString("CLIENT_SECRET"),
