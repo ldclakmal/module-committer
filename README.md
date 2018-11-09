@@ -1,4 +1,4 @@
-# Package Committer
+# Module Committer
 
 The committer connector generates the report for WSO2 Committer Request. It allows you to list all the pull requests you sent, list all the issues you get involved and list all the emails you get involved.
 
@@ -22,13 +22,13 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
         [How to obtain Google OAuth2.0 Credentials](https://gist.github.com/ldclakmal/6c43ed7dfaa19d7eb0db324402d14102)
 
-    2. Create a new Ballerina project by executing the following command at package root.
+    2. Create a new Ballerina project by executing the following command at module root.
 
         ```shell
         $ ballerina init
         ```
 
-    3. Create a `ballerina.conf` file at package root and add the obtained token as follows.
+    3. Create a `ballerina.conf` file at module root and add the obtained token as follows.
 
        ```ballerina.conf
        ACCESS_TOKEN="your_access_token"
@@ -41,7 +41,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 1. Refer the [Getting Started](https://ballerina.io/learn/getting-started/) guide to download and install Ballerina.
 
-2. Import the WSO2 Committer Report package to your Ballerina program as follows.
+2. Import the WSO2 Committer Report module to your Ballerina program as follows.
 
     ```ballerina
     import chanakal/committer;

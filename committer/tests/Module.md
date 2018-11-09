@@ -1,4 +1,4 @@
-# Package Committer - Tests
+# Module Committer - Tests
 
 The committer connector generates the report for WSO2 Committer Request. It allows you to list all the pull requests you sent, list all the issues you get involved and list all the emails you get involved.
 
@@ -14,7 +14,7 @@ In order to run the tests, you need to have OAuth 2.0 credentials for your GMail
 
 [How to obtain Google OAuth2.0 Credentials](https://gist.github.com/ldclakmal/6c43ed7dfaa19d7eb0db324402d14102)
 
-Then, you need to create a `ballerina.conf` file at package root and add the obtained token as follows.
+Then, you need to create a `ballerina.conf` file at module root and add the obtained token as follows.
 
 ###### ballerina.conf
 
