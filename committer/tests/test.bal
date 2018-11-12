@@ -7,7 +7,7 @@ endpoint Client committerReportClient {};
 
 @test:Config
 function testPrintPullRequestList() {
-    string githubUser = "ldclakmal";
+    string githubUser = "chanakal";
     var details = committerReportClient->printPullRequestList(githubUser, STATE_ALL);
     match details {
         () => {}
@@ -19,7 +19,7 @@ function testPrintPullRequestList() {
 
 @test:Config
 function testPrintIssueList() {
-    string githubUser = "ldclakmal";
+    string githubUser = "chanakal";
     var details = committerReportClient->printIssueList(githubUser, STATE_ALL);
     match details {
         () => {}
