@@ -8,7 +8,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 | Ballerina Version  |
 |:------------------:|
-| 0.982.0            |
+| 0.985.0            |
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 #### Setup GMail account
 
-- If you want to print GMail report, you have to follow these steps.
+- Please follow these steps if and only if you want to print GMail report. Otherwise move to section [How to Run](##how-to-run).
 
     1. Get OAuth 2.0 credentials for your GMail account. The following guide will help you get obtain the token.
 
@@ -49,9 +49,27 @@ The committer connector generates the report for WSO2 Committer Request. It allo
     import chanakal/committer;
     ```
 
-3. Call the action that you need to print the report. Following **sample code** section will help you to implement the necessary report.
+3. Create an client endpoint as follows:
 
-4. Run your program as follows.
+    ```ballerina
+    CommitterReportConfiguration committerReportConfig = {
+        clientConfig: {
+            auth: {
+                scheme: http:OAUTH2,
+                accessToken: config:getAsString("ACCESS_TOKEN"),
+                clientId: config:getAsString("CLIENT_ID"),
+                clientSecret: config:getAsString("CLIENT_SECRET"),
+                refreshToken: config:getAsString("REFRESH_TOKEN")
+            }
+        }
+    };
+
+    Client committerReportClient = new(config = committerReportConfig);
+    ```
+
+4. Call the action that you need to print the report. Following **sample code** section will help you to implement the necessary report.
+
+5. Run your program as follows.
 
     ```ballerina
     ballerina run your-program.bal -c /path/to/conf/file
@@ -65,17 +83,25 @@ This code explains how to get the given state pull requests sent by the given us
 import ballerina/io;
 import chanakal/committer;
 
-endpoint committer:Client committerReportClient {};
-
-function main (string... args) {
-    string githubUser = "ldclakmal";
-    var details = committerReportClient->printPullRequestList(githubUser,
-                            committer:STATE_ALL);
-    match details {
-        () => {}
-        error err => {
-            io:println(err);
+CommitterReportConfiguration committerReportConfig = {
+    clientConfig: {
+        auth: {
+            scheme: http:OAUTH2,
+            accessToken: config:getAsString("ACCESS_TOKEN"),
+            clientId: config:getAsString("CLIENT_ID"),
+            clientSecret: config:getAsString("CLIENT_SECRET"),
+            refreshToken: config:getAsString("REFRESH_TOKEN")
         }
+    }
+};
+
+Client committerReportClient = new(config = committerReportConfig);
+
+public function main() {
+    string githubUser = "ldclakmal";
+    var response = committerReportClient->printPullRequestList(githubUser, committer:STATE_ALL);
+    if (response is error) {
+        io:println(err);
     }
 }
 ```
@@ -86,17 +112,25 @@ This code explains how to get the given state issues, that the given username in
 import ballerina/io;
 import chanakal/committer;
 
-endpoint committer:Client committerReportClient {};
-
-function main (string... args) {
-    string githubUser = "ldclakmal";
-    var details = committerReportClient->printIssueList(githubUser,
-                        committer:STATE_ALL);
-    match details {
-        () => {}
-        error err => {
-            io:println(err);
+CommitterReportConfiguration committerReportConfig = {
+    clientConfig: {
+        auth: {
+            scheme: http:OAUTH2,
+            accessToken: config:getAsString("ACCESS_TOKEN"),
+            clientId: config:getAsString("CLIENT_ID"),
+            clientSecret: config:getAsString("CLIENT_SECRET"),
+            refreshToken: config:getAsString("REFRESH_TOKEN")
         }
+    }
+};
+
+Client committerReportClient = new(config = committerReportConfig);
+
+public function main() {
+    string githubUser = "ldclakmal";
+    var response = committerReportClient->printIssueList(githubUser, committer:STATE_ALL);
+    if (response is error) {
+        io:println(err);
     }
 }
 ```
@@ -107,17 +141,26 @@ This code explains how to get the emails, that the given user involves in. This 
 import ballerina/io;
 import chanakal/committer;
 
-endpoint committer:Client committerReportClient {};
+CommitterReportConfiguration committerReportConfig = {
+    clientConfig: {
+        auth: {
+            scheme: http:OAUTH2,
+            accessToken: config:getAsString("ACCESS_TOKEN"),
+            clientId: config:getAsString("CLIENT_ID"),
+            clientSecret: config:getAsString("CLIENT_SECRET"),
+            refreshToken: config:getAsString("REFRESH_TOKEN")
+        }
+    }
+};
 
-function main (string... args) {
+Client committerReportClient = new(config = committerReportConfig);
+
+public function main() {
     string userEmail = "chanakal@abc.com";
     string[] excludeEmails = ["mygroup@abc.com"];
-    var details = committerReportClient->printEmailList(userEmail, excludeEmails);
-    match details {
-        () => {}
-        error err => {
-            io:println(err);
-        }
+    var response = committerReportClient->printEmailList(userEmail, excludeEmails);
+    if (response is error) {
+        io:println(err);
     }
 }
 ```
