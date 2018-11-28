@@ -6,175 +6,147 @@ import wso2/gmail;
 
 int totalCount = 0;
 
-public type CommitterReportConnector object {
+public type CommitterReportConnector client object {
 
-    public http:Client client;
+    public http:Client committerReportClient;
+    public gmail:Client gmailClient;
 
-    # Prints the pull request URLs of given state, that the given user created
-    #
-    # + githubUser - GitHub username
-    # + state - GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
-    # + return - If success, returns nill, else returns an `error`
-    public function printPullRequestList(string githubUser, string state) returns error?;
+    public function __init(string url, CommitterReportConfiguration? committerReportConfig) {
+        self.committerReportClient = new(url);
+        self.gmailClient = new(committerReportConfig.clientConfig);
+    }
 
-    # Prints the issue URLs of given state, that the given user involves in
-    #
-    # + githubUser - GitHub username
-    # + state - GitHub state (`committer:STATE_ALL`, `committer:STATE_OPEN`, `committer:STATE_CLOSED`)
-    # + return - If success, returns nill, else returns an `error`
-    public function printIssueList(string githubUser, string state) returns error?;
+    remote function printPullRequestList(string githubUser, string state) returns error?;
 
-    # Prints the emails excluding the given given emails, that the given user involves in
-    #
-    # + userEmail - User email address
-    # + excludeEmails - List of emails that need to be excluded from 'to' list
-    # + return - If success, returns nill, else returns an `error`
-    public function printEmailList(string userEmail, string[]? excludeEmails) returns error?;
+    remote function printIssueList(string githubUser, string state) returns error?;
+
+    remote function printEmailList(string userEmail, string[]? excludeEmails) returns error?;
 };
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
-function CommitterReportConnector::printPullRequestList(string githubUser, string state) returns error? {
+remote function CommitterReportConnector.printPullRequestList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub pull request report for user:" + githubUser + " & " + state);
 
-    map<string[]> responseMap;
+    map<string[]> responseMap = {};
     string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
-    var response = prepareMapForGitHUb(self.client, requestPath, responseMap);
-    match response {
-        () => {
-            io:println("---");
-            io:println("Report of the GitHub Pull Requests");
-            io:println("• GitHub User   : " + githubUser);
-            io:println("• State         : " + state);
-            io:println("• Total PR Count: " + totalCount);
-            io:println("---");
-            printGitHubDataMap(responseMap);
-            return ();
-        }
-        error e => {
-            log:printError("Error while calling the GitHub REST API", err = e);
-            return e;
-        }
+    var response = prepareMapForGitHUb(self.committerReportClient, requestPath, responseMap);
+    if (response is ()) {
+        io:println("---");
+        io:println("Report of the GitHub Pull Requests");
+        io:println("• GitHub User   : " + githubUser);
+        io:println("• State         : " + state);
+        io:println("• Total PR Count: " + totalCount);
+        io:println("---");
+        printGitHubDataMap(responseMap);
+        return ();
+    } else {
+        log:printError("Error while calling the GitHub REST API", err = response);
+        return response;
     }
 }
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
-function CommitterReportConnector::printIssueList(string githubUser, string state) returns error? {
+remote function CommitterReportConnector.printIssueList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub issue report for user:" + githubUser + " & " + state);
 
-    map<string[]> responseMap;
+    map<string[]> responseMap = {};
     string requestPath = SEARCH_API + TYPE_ISSUE + PLUS + INVOLVES + githubUser + PLUS + state;
-    var response = prepareMapForGitHUb(self.client, requestPath, responseMap);
-    match response {
-        () => {
-            io:println("---");
-            io:println("Report of the GitHub Issues");
-            io:println("• GitHub User       : " + githubUser);
-            io:println("• State             : " + state);
-            io:println("• Total Issue Count : " + totalCount);
-            io:println("---");
-            printGitHubDataMap(responseMap);
-            return ();
-        }
-        error e => {
-            log:printError("Error while calling the GitHub REST API", err = e);
-            return e;
-        }
+    var response = prepareMapForGitHUb(self.committerReportClient, requestPath, responseMap);
+    if (response is ()) {
+        io:println("---");
+        io:println("Report of the GitHub Issues");
+        io:println("• GitHub User       : " + githubUser);
+        io:println("• State             : " + state);
+        io:println("• Total Issue Count : " + totalCount);
+        io:println("---");
+        printGitHubDataMap(responseMap);
+        return ();
+    } else {
+        log:printError("Error while calling the GitHub REST API", err = response);
+        return response;
     }
 }
 
-function CommitterReportConnector::printEmailList(string userEmail, string[]? excludeEmails)
-                                       returns error? {
-    endpoint gmail:Client gmailEP {
-        clientConfig: {
-            auth: {
-                scheme: http:OAUTH2,
-                accessToken: config:getAsString("ACCESS_TOKEN"),
-                clientId: config:getAsString("CLIENT_ID"),
-                clientSecret: config:getAsString("CLIENT_SECRET"),
-                refreshToken: config:getAsString("REFRESH_TOKEN")
-            }
-        }
-    };
+remote function CommitterReportConnector.printEmailList(string userEmail, string[]? excludeEmails) returns error? {
 
     log:printInfo("Preparing EMail report for user:" + userEmail);
 
     string queryParams = buildQueryParams(userEmail, excludeEmails);
     gmail:MsgSearchFilter searchFilter = { includeSpamTrash: false, maxResults: MAX_LIST_SIZE, q: queryParams };
-    var threadList = gmailEP->listThreads(ME, filter = searchFilter);
-    match threadList {
-        gmail:ThreadListPage list => {
-            io:println("---");
-            io:println("Report of the EMails");
-            io:println("• EMail User        : " + userEmail);
-            io:println("• Search Filter     : " + queryParams);
-            io:println("• Total Email Count : " + list.resultSizeEstimate);
-            io:println("---");
-            io:print("Processing .");
-            string[] initiatedEmails;
-            string[] contributedEmails;
-            foreach i, thread in list.threads {
-                var threadInfo = gmailEP->readThread(ME, <string>thread.threadId, format = gmail:FORMAT_METADATA,
-                    metadataHeaders = [SUBJECT]);
-                match threadInfo {
-                    gmail:Thread t => {
-                        string subject = <string>t.messages[0].headerSubject;
-                        if (subject == EMPTY_STRING) {
-                            subject = NO_SUBJECT;
-                        }
-                        string[] labels = t.messages[0].labelIds;
-                        boolean isInitiatedEmail = false;
-                        foreach label in labels {
-                            if (label.contains(INBOX)) {
-                                isInitiatedEmail = true;
-                                break;
-                            }
-                        }
-                        if (isInitiatedEmail){
-                            initiatedEmails[lengthof initiatedEmails] = subject;
-                        } else {
-                            contributedEmails[lengthof contributedEmails] = subject;
-                        }
-                        io:print(".");
-                    }
-                    gmail:GmailError e => return e;
+    var threadList = self.gmailClient->listThreads(ME, filter = searchFilter);
+    if (threadList is gmail:ThreadListPage) {
+        io:println("---");
+        io:println("Report of the EMails");
+        io:println("• EMail User        : " + userEmail);
+        io:println("• Search Filter     : " + queryParams);
+        io:println("• Total Email Count : " + threadList.resultSizeEstimate);
+        io:println("---");
+        io:print("Processing .");
+        string[] initiatedEmails = [];
+        string[] contributedEmails = [];
+        foreach i, thread in threadList.threads {
+            var threadInfo = gmailClient->readThread(ME, <string>thread.threadId, format = gmail:FORMAT_METADATA,
+                metadataHeaders = [SUBJECT]);
+            if (threadInfo is gmail:Thread) {
+                string subject = <string>threadInfo.messages[0].headerSubject;
+                if (subject == EMPTY_STRING) {
+                    subject = NO_SUBJECT;
                 }
+                string[] labels = threadInfo.messages[0].labelIds;
+                boolean isInitiatedEmail = false;
+                foreach label in labels {
+                    if (label.contains(INBOX)) {
+                        isInitiatedEmail = true;
+                        break;
+                    }
+                }
+                if (isInitiatedEmail) {
+                    initiatedEmails[initiatedEmails.length()] = subject;
+                } else {
+                    contributedEmails[contributedEmails.length()] = subject;
+                }
+                io:print(".");
+            } else {
+                return threadInfo;
             }
-            io:println(" ✔\n---");
-            printGmailDataList(initiatedEmails, "INITIATED EMAILS");
-            printGmailDataList(contributedEmails, "CONTRIBUTED EMAILS");
-            return ();
         }
-        gmail:GmailError e => return e;
+        io:println(" ✔\n---");
+        printGmailDataList(initiatedEmails, "INITIATED EMAILS");
+        printGmailDataList(contributedEmails, "CONTRIBUTED EMAILS");
+        return ();
+    } else {
+        log:printError("Error while calling the GMail connector - listThreads API", err = threadList);
+        return threadList;
     }
 }
 
 // Prepare map by recursively calling the GitHub search API
-function prepareMapForGitHUb(http:Client client, string requestPath, map<string[]> responseMap) returns error? {
-    endpoint http:Client httpClient = client;
+function prepareMapForGitHUb(http:Client committerReportClient, string requestPath, map<string[]> responseMap)
+             returns error? {
+    http:Client httpClient = committerReportClient;
     var response = httpClient->get(requestPath);
-    match response {
-        http:Response res => {
-            json payload = check res.getJsonPayload();
-            totalCount = untaint check <int>payload.total_count;
-            json[] itemList = check <json[]>payload.items;
-            foreach item in itemList {
-                string repoUrl = check <string>item.repository_url;
-                string htmlUrl = check <string>item.html_url;
-                addToMap(responseMap, repoUrl, htmlUrl);
-            }
-
-            if (res.hasHeader(LINK_HEADER)) {
-                string linkHeader = res.getHeader(LINK_HEADER);
-                string nextResourcePath = getNextResourcePath(linkHeader);
-                // Check for the next page exists.
-                if (nextResourcePath != EMPTY_STRING) {
-                    return prepareMapForGitHUb(client, nextResourcePath, responseMap);
-                }
-            }
-            return ();
+    if (response is http:Response) {
+        json payload = check response.getJsonPayload();
+        totalCount = untaint <int>payload.total_count;
+        json[] itemList = <json[]>payload.items;
+        foreach item in itemList {
+            string repoUrl = <string>item.repository_url;
+            string htmlUrl = <string>item.html_url;
+            addToMap(responseMap, repoUrl, htmlUrl);
         }
-        error e => return e;
+
+        if (response.hasHeader(LINK_HEADER)) {
+            string linkHeader = response.getHeader(LINK_HEADER);
+            string nextResourcePath = getNextResourcePath(linkHeader);
+            // Check for the next page exists.
+            if (nextResourcePath != EMPTY_STRING) {
+                return prepareMapForGitHUb(committerReportClient, nextResourcePath, responseMap);
+            }
+        }
+        return ();
+    } else {
+        return response;
     }
 }
