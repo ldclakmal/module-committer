@@ -9,7 +9,7 @@ import ballerina/io;
 function getNextResourcePath(string linkHeader) returns @untainted string {
     string[] urlWithRelationArray = linkHeader.split(COMMA);
     string nextUrl = "";
-    foreach urlWithRealtion in urlWithRelationArray {
+    foreach string urlWithRealtion in urlWithRelationArray {
         string urlWithBrackets = urlWithRealtion.split(SEMICOLON)[0].trim();
         if (urlWithRealtion.contains(NEXT_REALTION)) {
             nextUrl = getResourcePath(urlWithRealtion);
@@ -36,7 +36,7 @@ function buildQueryParams(string userEmail, string[]? excludeEmails) returns str
     string queryParams = "from:" + userEmail;
     if (excludeEmails is string[]) {
         queryParams += " to:(";
-        foreach email in excludeEmails {
+        foreach string email in excludeEmails {
             queryParams += " -" + email;
         }
         queryParams += ")";
@@ -64,14 +64,14 @@ function addToMap(map<string[]> m, string key, string value) {
 #
 # + m - The data as a map
 function printGitHubDataMap(map<string[]> m) {
-    foreach key in m.keys() {
+    foreach string key in m.keys() {
         string githubOrgWithRepo = key.replace(GITHUB_API_BASE_URL + REPOS, EMPTY_STRING);
         string githubOrg = githubOrgWithRepo.split(FORWARD_SLASH)[0];
         string githubRepo = githubOrgWithRepo.split(FORWARD_SLASH)[1];
         io:println("GitHub Org  : " + githubOrg);
         io:println("GitHub Repo : " + githubRepo);
         string[] list = <string[]>m[key];
-        foreach item in list  {
+        foreach string item in list  {
             io:println(item);
         }
         io:println("---");
@@ -84,7 +84,7 @@ function printGitHubDataMap(map<string[]> m) {
 function printGmailDataList(string[] list, string category) {
     io:println("Category: " + category);
     io:println("*****************************");
-    foreach item in list  {
+    foreach string item in list  {
         io:println(item);
     }
     io:println("---");
