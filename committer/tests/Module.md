@@ -6,7 +6,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 | Ballerina Version  |
 |:------------------:|
-| 0.982.0            |
+| 0.990.0            |
 
 ## Running tests
 

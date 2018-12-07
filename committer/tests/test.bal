@@ -3,29 +3,35 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/test;
 
-endpoint Client committerReportClient {};
+CommitterReportConfiguration committerReportConfig = {
+    clientConfig: {
+        auth: {
+            scheme: http:OAUTH2,
+            accessToken: config:getAsString("ACCESS_TOKEN"),
+            clientId: config:getAsString("CLIENT_ID"),
+            clientSecret: config:getAsString("CLIENT_SECRET"),
+            refreshToken: config:getAsString("REFRESH_TOKEN")
+        }
+    }
+};
+
+Client committerReportClient = new(config = committerReportConfig);
 
 @test:Config
 function testPrintPullRequestList() {
     string githubUser = "chanakal";
-    var details = committerReportClient->printPullRequestList(githubUser, STATE_ALL);
-    match details {
-        () => {}
-        error err => {
-            test:assertFail(msg = err.message);
-        }
+    var response = committerReportClient->printPullRequestList(githubUser, STATE_ALL);
+    if (response is error) {
+        test:assertFail(msg = <string>response.detail().message);
     }
 }
 
 @test:Config
 function testPrintIssueList() {
     string githubUser = "chanakal";
-    var details = committerReportClient->printIssueList(githubUser, STATE_ALL);
-    match details {
-        () => {}
-        error err => {
-            test:assertFail(msg = err.message);
-        }
+    var response = committerReportClient->printIssueList(githubUser, STATE_ALL);
+    if (response is error) {
+        test:assertFail(msg = <string>response.detail().message);
     }
 }
 
@@ -33,11 +39,8 @@ function testPrintIssueList() {
 function testPrintEmailList() {
     string userEmail = "chanakal@abc.com";
     string[] excludeEmails = ["mygroup@abc.com"];
-    var details = committerReportClient->printEmailList(userEmail, excludeEmails);
-    match details {
-        () => {}
-        error err => {
-            test:assertFail(msg = err.message);
-        }
+    var response = committerReportClient->printEmailList(userEmail, excludeEmails);
+    if (response is error) {
+        test:assertFail(msg = <string>response.detail().message);
     }
 }
