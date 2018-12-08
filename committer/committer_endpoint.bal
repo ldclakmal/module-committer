@@ -4,21 +4,31 @@ import wso2/gmail;
 
 # Object for CommitterReport endpoint.
 #
-# + committerReportClient - Reference to HTTP client endpoint for GitHub API
+# + gitHubToken - GitHub token
+# + gitHubClient - Reference to HTTP client endpoint for GitHub API
 # + gmailClient - Reference to HTTP client endpoint for GMail API
 public type Client client object {
 
-    http:Client committerReportClient;
+    string gitHubToken;
+    http:Client gitHubClient;
     gmail:Client gmailClient;
 
-    public function __init(CommitterReportConfiguration? config = ()) {
-        self.committerReportClient = new(GITHUB_API_BASE_URL);
-        var gmailConfig = gmail:GmailConfiguration.convert(config);
-        if (gmailConfig is gmail:GmailConfiguration) {
-            self.gmailClient = new(gmailConfig);
-        } else {
-            panic gmailConfig;
-        }
+    public function __init(CommitterReportConfiguration config) {
+        self.gitHubClient = new(GITHUB_API_BASE_URL);
+        self.gitHubToken = config.githubToken;
+
+        gmail:GmailConfiguration gmailConfig = {
+            clientConfig: {
+                auth: {
+                    scheme: http:OAUTH2,
+                    accessToken: config.gmailAccessToken,
+                    clientId: config.gmailClientId,
+                    clientSecret: config.gmailClientSecret,
+                    refreshToken: config.gmailRefreshToken
+                }
+            }
+        };
+        self.gmailClient = new(gmailConfig);
     }
 
     # Prints the pull request URLs of given state, that the given user created
@@ -41,13 +51,23 @@ public type Client client object {
     # + excludeEmails - List of emails that need to be excluded from 'to' list
     # + return - If success, returns nill, else returns an `error`
     public remote function printEmailList(string userEmail, string[]? excludeEmails) returns error?;
+
+    remote function prepareMapForGitHub(string requestPath, map<string[]> responseMap) returns error?;
 };
 
 # Object for committer report configuration.
 #
-# + clientConfig - The http client endpoint configuration
+# + githubToken - The GitHub personal access token
+# + gmailAccessToken - The Gmail access token
+# + gmailClientId - The Gmail client id
+# + gmailClientSecret - The Gmail client secret
+# + gmailRefreshToken - The Gmail refresh token
 public type CommitterReportConfiguration record {
-    http:ClientEndpointConfig clientConfig;
+    string githubToken = "";
+    string gmailAccessToken = "";
+    string gmailClientId = "";
+    string gmailClientSecret = "";
+    string gmailRefreshToken = "";
 };
 
 int totalCount = 0;
@@ -59,7 +79,7 @@ remote function Client.printPullRequestList(string githubUser, string state) ret
 
     map<string[]> responseMap = {};
     string requestPath = SEARCH_API + TYPE_PR + PLUS + AUTHOR + githubUser + PLUS + state;
-    var response = prepareMapForGitHUb(self.committerReportClient, requestPath, responseMap);
+    var response = self->prepareMapForGitHub(requestPath, responseMap);
     if (response is ()) {
         io:println("---");
         io:println("Report of the GitHub Pull Requests");
@@ -70,7 +90,7 @@ remote function Client.printPullRequestList(string githubUser, string state) ret
         printGitHubDataMap(responseMap);
         return ();
     } else {
-        log:printError("Error while calling the GitHub REST API", err = response);
+        log:printError("Error while calling the GitHub REST API.", err = response);
         return response;
     }
 }
@@ -82,7 +102,7 @@ remote function Client.printIssueList(string githubUser, string state) returns e
 
     map<string[]> responseMap = {};
     string requestPath = SEARCH_API + TYPE_ISSUE + PLUS + INVOLVES + githubUser + PLUS + state;
-    var response = prepareMapForGitHUb(self.committerReportClient, requestPath, responseMap);
+    var response = self->prepareMapForGitHub(requestPath, responseMap);
     if (response is ()) {
         io:println("---");
         io:println("Report of the GitHub Issues");
@@ -93,7 +113,7 @@ remote function Client.printIssueList(string githubUser, string state) returns e
         printGitHubDataMap(responseMap);
         return ();
     } else {
-        log:printError("Error while calling the GitHub REST API", err = response);
+        log:printError("Error while calling the GitHub REST API.", err = response);
         return response;
     }
 }
@@ -116,7 +136,8 @@ remote function Client.printEmailList(string userEmail, string[]? excludeEmails)
         string[] initiatedEmails = [];
         string[] contributedEmails = [];
         foreach var thread in threadList.threads {
-            var threadInfo = self.gmailClient->readThread(ME, untaint <string>thread.threadId, format = gmail:FORMAT_METADATA,
+            var threadInfo = self.gmailClient->readThread(ME, untaint <string>thread.threadId, format = gmail:
+                FORMAT_METADATA,
                 metadataHeaders = [SUBJECT]);
             if (threadInfo is gmail:Thread) {
                 string subject = <string>threadInfo.messages[0].headerSubject;
@@ -146,18 +167,21 @@ remote function Client.printEmailList(string userEmail, string[]? excludeEmails)
         printGmailDataList(contributedEmails, "CONTRIBUTED EMAILS");
         return ();
     } else {
-        log:printError("Error while calling the GMail connector - listThreads API", err = threadList);
+        log:printError("Error while calling the GMail connector - listThreads API.", err = threadList);
         return threadList;
     }
 }
 
 // Prepare map by recursively calling the GitHub search API
-function prepareMapForGitHUb(http:Client committerReportClient, string requestPath, map<string[]> responseMap)
-             returns error? {
-    http:Client httpClient = committerReportClient;
-    var response = httpClient->get(requestPath);
+remote function Client.prepareMapForGitHub(string requestPath, map<string[]> responseMap) returns error? {
+    http:Client httpClient = self.gitHubClient;
+    var response = httpClient->get(requestPath + "&access_token=" + self.gitHubToken);
     if (response is http:Response) {
         json payload = check response.getJsonPayload();
+        if (payload.message != ()) {
+            error err = error("Error while preparing map by recursive API calls.", { message: payload.message });
+            return err;
+        }
         totalCount = untaint <int>payload.total_count;
         json[] itemList = <json[]>payload.items;
         foreach json item in itemList {
@@ -171,7 +195,7 @@ function prepareMapForGitHUb(http:Client committerReportClient, string requestPa
             string nextResourcePath = getNextResourcePath(linkHeader);
             // Check for the next page exists.
             if (nextResourcePath != EMPTY_STRING) {
-                return prepareMapForGitHUb(committerReportClient, nextResourcePath, responseMap);
+                return self->prepareMapForGitHub(nextResourcePath, responseMap);
             }
         }
         return ();
