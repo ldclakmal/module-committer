@@ -130,10 +130,10 @@ import ballerina/io;
 import chanakal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
-    gmailAccessToken: config:getAsString("ACCESS_TOKEN"),
-    gmailClientId: config:getAsString("CLIENT_ID"),
-    gmailClientSecret: config:getAsString("CLIENT_SECRET"),
-    gmailRefreshToken: config:getAsString("REFRESH_TOKEN")
+    gmailAccessToken: config:getAsString("GMAIL_ACCESS_TOKEN"),
+    gmailClientId: config:getAsString("GMAIL_CLIENT_ID"),
+    gmailClientSecret: config:getAsString("GMAIL_CLIENT_SECRET"),
+    gmailRefreshToken: config:getAsString("GMAIL_REFRESH_TOKEN")
 };
 
 committer:Client committerReportClient = new(committerReportConfig);
