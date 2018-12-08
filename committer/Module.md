@@ -14,7 +14,10 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 #### Setup GitHub account
 
-- If you want to print GitHub report, you do not need to setup anything at this stage.
+- If you want to print GitHub report, you need to get credentials from GitHub. Please follow these setups.
+
+    1. In your [GitHub profile settings](https://github.com/settings/profile), go to **Developer settings -> Personal access tokens**.
+    2. Generate a new token to access the GitHub API.
 
 #### Setup GMail account
 
@@ -24,19 +27,24 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
         [How to obtain Google OAuth2.0 Credentials](https://gist.github.com/ldclakmal/6c43ed7dfaa19d7eb0db324402d14102)
 
-    2. Create a new Ballerina project by executing the following command at module root.
+### Setup Credentials
+
+- Once you obtained all the credentials, follow these steps.
+
+    1. Create a new Ballerina project by executing the following command at module root.
 
         ```shell
         $ ballerina init
         ```
 
-    3. Create a `ballerina.conf` file at module root and add the obtained token as follows.
+    2. Create a `ballerina.conf` file at module root and add the obtained token as follows.
 
        ```ballerina.conf
-       ACCESS_TOKEN="your_access_token"
-       CLIENT_ID="your_client_id"
-       CLIENT_SECRET="your_client_secret"
-       REFRESH_TOKEN="your_refresh_token"
+       GMAIL_ACCESS_TOKEN="your_access_token"
+       GMAIL_CLIENT_ID="your_client_id"
+       GMAIL_CLIENT_SECRET="your_client_secret"
+       GMAIL_REFRESH_TOKEN="your_refresh_token"
+       GITHUB_TOKEN="your_github_personal_access_token"
        ```
 
 ## How to Run
@@ -52,19 +60,15 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 3. Create an client endpoint as follows:
 
     ```ballerina
-    CommitterReportConfiguration committerReportConfig = {
-        clientConfig: {
-            auth: {
-                scheme: http:OAUTH2,
-                accessToken: config:getAsString("ACCESS_TOKEN"),
-                clientId: config:getAsString("CLIENT_ID"),
-                clientSecret: config:getAsString("CLIENT_SECRET"),
-                refreshToken: config:getAsString("REFRESH_TOKEN")
-            }
-        }
+    committer:CommitterReportConfiguration committerReportConfig = {
+        githubToken: config:getAsString("GITHUB_TOKEN"),
+        gmailAccessToken: config:getAsString("ACCESS_TOKEN"),
+        gmailClientId: config:getAsString("CLIENT_ID"),
+        gmailClientSecret: config:getAsString("CLIENT_SECRET"),
+        gmailRefreshToken: config:getAsString("REFRESH_TOKEN")
     };
 
-    Client committerReportClient = new(config = committerReportConfig);
+    committer:Client committerReportClient = new(committerReportConfig);
     ```
 
 4. Call the action that you need to print the report. Following **sample code** section will help you to implement the necessary report.
@@ -83,19 +87,11 @@ This code explains how to get the given state pull requests sent by the given us
 import ballerina/io;
 import chanakal/committer;
 
-CommitterReportConfiguration committerReportConfig = {
-    clientConfig: {
-        auth: {
-            scheme: http:OAUTH2,
-            accessToken: config:getAsString("ACCESS_TOKEN"),
-            clientId: config:getAsString("CLIENT_ID"),
-            clientSecret: config:getAsString("CLIENT_SECRET"),
-            refreshToken: config:getAsString("REFRESH_TOKEN")
-        }
-    }
+committer:CommitterReportConfiguration committerReportConfig = {
+    githubToken: config:getAsString("GITHUB_TOKEN")
 };
 
-Client committerReportClient = new(config = committerReportConfig);
+committer:Client committerReportClient = new(committerReportConfig);
 
 public function main() {
     string githubUser = "ldclakmal";
@@ -112,19 +108,11 @@ This code explains how to get the given state issues, that the given username in
 import ballerina/io;
 import chanakal/committer;
 
-CommitterReportConfiguration committerReportConfig = {
-    clientConfig: {
-        auth: {
-            scheme: http:OAUTH2,
-            accessToken: config:getAsString("ACCESS_TOKEN"),
-            clientId: config:getAsString("CLIENT_ID"),
-            clientSecret: config:getAsString("CLIENT_SECRET"),
-            refreshToken: config:getAsString("REFRESH_TOKEN")
-        }
-    }
+committer:CommitterReportConfiguration committerReportConfig = {
+    githubToken: config:getAsString("GITHUB_TOKEN")
 };
 
-Client committerReportClient = new(config = committerReportConfig);
+committer:Client committerReportClient = new(committerReportConfig);
 
 public function main() {
     string githubUser = "ldclakmal";
@@ -141,22 +129,17 @@ This code explains how to get the emails, that the given user involves in. This 
 import ballerina/io;
 import chanakal/committer;
 
-CommitterReportConfiguration committerReportConfig = {
-    clientConfig: {
-        auth: {
-            scheme: http:OAUTH2,
-            accessToken: config:getAsString("ACCESS_TOKEN"),
-            clientId: config:getAsString("CLIENT_ID"),
-            clientSecret: config:getAsString("CLIENT_SECRET"),
-            refreshToken: config:getAsString("REFRESH_TOKEN")
-        }
-    }
+committer:CommitterReportConfiguration committerReportConfig = {
+    gmailAccessToken: config:getAsString("ACCESS_TOKEN"),
+    gmailClientId: config:getAsString("CLIENT_ID"),
+    gmailClientSecret: config:getAsString("CLIENT_SECRET"),
+    gmailRefreshToken: config:getAsString("REFRESH_TOKEN")
 };
 
-Client committerReportClient = new(config = committerReportConfig);
+committer:Client committerReportClient = new(committerReportConfig);
 
 public function main() {
-    string userEmail = "chanakal@abc.com";
+    string userEmail = "ldclakmal@gmail.com";
     string[] excludeEmails = ["mygroup@abc.com"];
     var response = committerReportClient->printEmailList(userEmail, excludeEmails);
     if (response is error) {
@@ -173,5 +156,5 @@ https://github.com/ldclakmal/ballerina-samples/blob/master/connectors/committer.
 - Run this program as follows:
 
     ```ballerina
-    ballerina run committer.bal -c /path/to/conf/file
+    ballerina run  -c /path/to/conf/file committer.bal
     ```
