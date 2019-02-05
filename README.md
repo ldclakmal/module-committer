@@ -6,18 +6,18 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 | Ballerina Version  |
 |:------------------:|
-| 0.990.0            |
+| 0.990.2            |
 
 ## Getting Started
 
-#### Setup GitHub account
+### Setup GitHub account
 
 - If you want to print GitHub report, you need to get credentials from GitHub. Please follow these setups.
 
     1. In your [GitHub profile settings](https://github.com/settings/profile), go to **Developer settings -> Personal access tokens**.
     2. Generate a new token to access the GitHub API.
 
-#### Setup GMail account
+### Setup GMail account
 
 - Please follow these steps if and only if you want to print GMail report. Otherwise move to section [How to Run](##how-to-run).
 
@@ -77,7 +77,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
     ballerina run your-program.bal -c /path/to/conf/file
     ```
 
-#### Sample Code
+### Sample Code
 
 This code explains how to get the given state pull requests sent by the given username.
 
@@ -95,7 +95,7 @@ public function main() {
     string githubUser = "ldclakmal";
     var response = committerReportClient->printPullRequestList(githubUser, committer:STATE_ALL);
     if (response is error) {
-        io:println(err);
+        io:println(response);
     }
 }
 ```
@@ -116,7 +116,7 @@ public function main() {
     string githubUser = "ldclakmal";
     var response = committerReportClient->printIssueList(githubUser, committer:STATE_ALL);
     if (response is error) {
-        io:println(err);
+        io:println(response);
     }
 }
 ```
@@ -141,12 +141,12 @@ public function main() {
     string[] excludeEmails = ["mygroup@abc.com"];
     var response = committerReportClient->printEmailList(userEmail, excludeEmails);
     if (response is error) {
-        io:println(err);
+        io:println(response);
     }
 }
 ```
 
-#### Sample Program
+### Sample Program
 
 - Please refer following URL for the full implementation.
 https://github.com/ldclakmal/ballerina-samples/blob/master/connectors/committer.bal
