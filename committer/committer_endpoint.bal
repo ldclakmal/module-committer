@@ -73,7 +73,7 @@ public type CommitterReportConfiguration record {
 int totalCount = 0;
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
-remote function Client.printPullRequestList(string githubUser, string state) returns error? {
+public remote function Client.printPullRequestList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub pull request report for user:" + githubUser + " & " + state);
 
@@ -96,7 +96,7 @@ remote function Client.printPullRequestList(string githubUser, string state) ret
 }
 
 // API Doc: https://developer.github.com/v3/search/#search-issues
-remote function Client.printIssueList(string githubUser, string state) returns error? {
+public remote function Client.printIssueList(string githubUser, string state) returns error? {
 
     log:printInfo("Preparing GitHub issue report for user:" + githubUser + " & " + state);
 
@@ -118,7 +118,7 @@ remote function Client.printIssueList(string githubUser, string state) returns e
     }
 }
 
-remote function Client.printEmailList(string userEmail, string[]? excludeEmails) returns error? {
+public remote function Client.printEmailList(string userEmail, string[]? excludeEmails) returns error? {
 
     log:printInfo("Preparing EMail report for user:" + userEmail);
 
