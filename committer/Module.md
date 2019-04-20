@@ -8,7 +8,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 | Ballerina Version  |
 |:------------------:|
-| 0.990.3            |
+| 0.991.0            |
 
 ## Getting Started
 

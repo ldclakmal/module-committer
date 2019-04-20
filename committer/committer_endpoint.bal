@@ -21,10 +21,18 @@ public type Client client object {
             clientConfig: {
                 auth: {
                     scheme: http:OAUTH2,
-                    accessToken: config.gmailAccessToken,
-                    clientId: config.gmailClientId,
-                    clientSecret: config.gmailClientSecret,
-                    refreshToken: config.gmailRefreshToken
+                    config: {
+                        grantType: http:DIRECT_TOKEN,
+                        config: {
+                            accessToken: config.gmailAccessToken,
+                            refreshConfig: {
+                                clientId: config.gmailClientId,
+                                clientSecret: config.gmailClientSecret,
+                                refreshToken: config.gmailRefreshToken,
+                                refreshUrl: gmail:REFRESH_URL
+                            }
+                        }
+                    }
                 }
             }
         };
