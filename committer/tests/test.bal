@@ -33,7 +33,7 @@ function testPrintIssueList() {
 
 @test:Config
 function testPrintEmailList() {
-    string userEmail = "ldclakmal@gmail.com";
+    string userEmail = "b7a.demo@gmail.com";
     string[] excludeEmails = ["mygroup@abc.com"];
     var response = committerReportClient->printEmailList(userEmail, excludeEmails);
     if (response is error) {
