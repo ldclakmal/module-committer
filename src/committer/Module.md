@@ -8,7 +8,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 | Ballerina Version  |
 |:------------------:|
-| 0.991.0            |
+| 1.0                |
 
 ## Getting Started
 
@@ -31,11 +31,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 
 - Once you obtained all the credentials, follow these steps.
 
-    1. Create a new Ballerina project by executing the following command at module root.
-
-        ```shell
-        $ ballerina init
-        ```
+    1. Create a new Ballerina project refering to the "Projects" secion of https://v1-0.ballerina.io/learn/how-to-structure-ballerina-code/.
 
     2. Create a `ballerina.conf` file at module root and add the obtained token as follows.
 
@@ -76,7 +72,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 5. Run your program as follows.
 
     ```ballerina
-    ballerina run your-program.bal -c /path/to/conf/file
+    ballerina run your-program.bal --b7a.config.file=/path/to/conf/file
     ```
 
 ### Sample Code
@@ -156,5 +152,5 @@ https://github.com/ldclakmal/ballerina-samples/blob/master/connectors/committer.
 - Run this program as follows:
 
     ```ballerina
-    ballerina run  -c /path/to/conf/file committer.bal
+    ballerina run committer.bal --b7a.config.file=sample-users.toml
     ```
