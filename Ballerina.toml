@@ -1,7 +1,9 @@
 [project]
 org-name = "ldclakmal"
-version = "0.9.16"
+version = "1.0.0"
 authors = ["Chanaka Lakmal"]
 keywords = ["committer-report", "github", "pull-requests", "issues", "gmail", "email"]
 repository = "https://github.com/ldclakmal/module-committer"
-license = "Apache-2.0"
+license = ["Apache-2.0"]
+
+[dependencies]

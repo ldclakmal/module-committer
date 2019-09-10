@@ -1,10 +1,10 @@
 # IDE files
+.ballerina/
+target/
 .idea/
-.vscode/
 *.iml
 
 # Ballerina
-.ballerina/
-target/
-*.log
 *.conf
+*.log
+*.lock
