@@ -150,7 +150,7 @@ public type Client client object {
         var response = httpClient->get(requestPath + "&access_token=" + self.gitHubToken);
         if (response is http:Response) {
             json payload = check response.getJsonPayload();
-            if (payload.message != ()) {
+            if (payload.total_count is error) {
                 error err = error("Error while preparing map by recursive API calls.", message = payload.message.toString());
                 return err;
             }

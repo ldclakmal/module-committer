@@ -11,9 +11,10 @@ CommitterReportConfiguration committerReportConfig = {
 
 Client committerReportClient = new(committerReportConfig);
 
+string githubUser = config:getAsString("GITHUB_USER");
+
 @test:Config{}
 function testPrintPullRequestList() {
-    string githubUser = "ldclakmal";
     var response = committerReportClient->printPullRequestList(githubUser, STATE_ALL);
     if (response is error) {
         test:assertFail(msg = response.detail()?.message.toString());
@@ -22,7 +23,6 @@ function testPrintPullRequestList() {
 
 @test:Config{}
 function testPrintIssueList() {
-    string githubUser = "ldclakmal";
     var response = committerReportClient->printIssueList(githubUser, STATE_ALL);
     if (response is error) {
         test:assertFail(msg = response.detail()?.message.toString());
