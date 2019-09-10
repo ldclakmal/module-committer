@@ -1,4 +1,5 @@
 import ballerina/io;
+import ballerina/stringutils;
 
 # Return the untainted next URL after clearing the given link header with other symbols. If next URL is not given,
 # returns an empty string, which represents the last page
@@ -7,11 +8,11 @@ import ballerina/io;
 # + linkHeader - Link header of the request
 # + return - Next URL and Last URL
 function getNextResourcePath(string linkHeader) returns @untainted string {
-    string[] urlWithRelationArray = linkHeader.split(COMMA);
+    string[] urlWithRelationArray = stringutils:split(linkHeader, COMMA);
     string nextUrl = "";
     foreach string urlWithRealtion in urlWithRelationArray {
-        string urlWithBrackets = urlWithRealtion.split(SEMICOLON)[0].trim();
-        if (urlWithRealtion.contains(NEXT_REALTION)) {
+        string urlWithBrackets = stringutils:split(urlWithRealtion, SEMICOLON)[0].trim();
+        if (stringutils:contains(urlWithRealtion, NEXT_REALTION)) {
             nextUrl = getResourcePath(urlWithRealtion);
         }
     }
@@ -23,8 +24,8 @@ function getNextResourcePath(string linkHeader) returns @untainted string {
 # + link - Link URL with other parameters
 # + return - Cleaned resource path
 function getResourcePath(string link) returns string {
-    string urlWithBrackets = link.split(SEMICOLON)[0].trim();
-    return urlWithBrackets.substring(1, urlWithBrackets.length() - 1).replace(GITHUB_API_BASE_URL, EMPTY_STRING);
+    string urlWithBrackets = stringutils:split(link, SEMICOLON)[0].trim();
+    return stringutils:replace(urlWithBrackets.substring(1, urlWithBrackets.length() - 1), GITHUB_API_BASE_URL, EMPTY_STRING);
 }
 
 # Return the build query parametrs for GMail API
@@ -65,9 +66,9 @@ function addToMap(map<string[]> m, string key, string value) {
 # + m - The data as a map
 function printGitHubDataMap(map<string[]> m) {
     foreach string key in m.keys() {
-        string githubOrgWithRepo = key.replace(GITHUB_API_BASE_URL + REPOS, EMPTY_STRING);
-        string githubOrg = githubOrgWithRepo.split(FORWARD_SLASH)[0];
-        string githubRepo = githubOrgWithRepo.split(FORWARD_SLASH)[1];
+        string githubOrgWithRepo = stringutils:replace(key, GITHUB_API_BASE_URL + REPOS, EMPTY_STRING);
+        string githubOrg = stringutils:split(githubOrgWithRepo, FORWARD_SLASH)[0];
+        string githubRepo = stringutils:split(githubOrgWithRepo, FORWARD_SLASH)[1];
         io:println("GitHub Org  : " + githubOrg);
         io:println("GitHub Repo : " + githubRepo);
         string[] list = <string[]>m[key];

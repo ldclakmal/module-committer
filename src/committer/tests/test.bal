@@ -1,6 +1,4 @@
 import ballerina/config;
-import ballerina/http;
-import ballerina/io;
 import ballerina/test;
 
 CommitterReportConfiguration committerReportConfig = {
@@ -13,30 +11,30 @@ CommitterReportConfiguration committerReportConfig = {
 
 Client committerReportClient = new(committerReportConfig);
 
-@test:Config
+@test:Config{}
 function testPrintPullRequestList() {
     string githubUser = "ldclakmal";
     var response = committerReportClient->printPullRequestList(githubUser, STATE_ALL);
     if (response is error) {
-        test:assertFail(msg = <string>response.detail().message);
+        test:assertFail(msg = response.detail()?.message.toString());
     }
 }
 
-@test:Config
+@test:Config{}
 function testPrintIssueList() {
     string githubUser = "ldclakmal";
     var response = committerReportClient->printIssueList(githubUser, STATE_ALL);
     if (response is error) {
-        test:assertFail(msg = <string>response.detail().message);
+        test:assertFail(msg = response.detail()?.message.toString());
     }
 }
 
-@test:Config
+@test:Config{}
 function testPrintEmailList() {
     string userEmail = "b7a.demo@gmail.com";
     string[] excludeEmails = ["mygroup@abc.com"];
     var response = committerReportClient->printEmailList(userEmail, excludeEmails);
     if (response is error) {
-        test:assertFail(msg = <string>response.detail().message);
+        test:assertFail(msg = response.detail()?.message.toString());
     }
 }
