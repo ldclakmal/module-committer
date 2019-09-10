@@ -52,7 +52,7 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 2. Import the WSO2 Committer Report module to your Ballerina program as follows.
 
     ```ballerina
-    import chanakal/committer;
+    import ldclakmal/committer;
     ```
 
 3. Create an client endpoint as follows:
@@ -83,7 +83,7 @@ This code explains how to get the given state pull requests sent by the given us
 
 ```ballerina
 import ballerina/io;
-import chanakal/committer;
+import ldclakmal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
     githubToken: config:getAsString("GITHUB_TOKEN")
@@ -104,7 +104,7 @@ This code explains how to get the given state issues, that the given username in
 
 ```ballerina
 import ballerina/io;
-import chanakal/committer;
+import ldclakmal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
     githubToken: config:getAsString("GITHUB_TOKEN")
@@ -125,7 +125,7 @@ This code explains how to get the emails, that the given user involves in. This 
 
 ```ballerina
 import ballerina/io;
-import chanakal/committer;
+import ldclakmal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
     gmailAccessToken: config:getAsString("GMAIL_ACCESS_TOKEN"),
