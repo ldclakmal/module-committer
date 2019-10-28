@@ -80,7 +80,9 @@ The committer connector generates the report for WSO2 Committer Request. It allo
 This code explains how to get the given state pull requests sent by the given username.
 
 ```ballerina
+import ballerina/config;
 import ballerina/io;
+import ballerina/log;
 import ldclakmal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
@@ -93,7 +95,7 @@ public function main() {
     string githubUser = "ldclakmal";
     var response = committerReportClient->printPullRequestList(githubUser, committer:STATE_ALL);
     if (response is error) {
-        io:println(response);
+        log:printError("Failed to print PR list", err = response);
     }
 }
 ```
@@ -101,7 +103,9 @@ public function main() {
 This code explains how to get the given state issues, that the given username involves in.
 
 ```ballerina
+import ballerina/config;
 import ballerina/io;
+import ballerina/log;
 import ldclakmal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
@@ -114,7 +118,7 @@ public function main() {
     string githubUser = "ldclakmal";
     var response = committerReportClient->printIssueList(githubUser, committer:STATE_ALL);
     if (response is error) {
-        io:println(response);
+        log:printError("Failed to print issue list", err = response);
     }
 }
 ```
@@ -122,7 +126,9 @@ public function main() {
 This code explains how to get the emails, that the given user involves in. This prints under two categories as 'Initiated Emails' and 'Contributed Emails'
 
 ```ballerina
+import ballerina/config;
 import ballerina/io;
+import ballerina/log;
 import ldclakmal/committer;
 
 committer:CommitterReportConfiguration committerReportConfig = {
@@ -139,7 +145,7 @@ public function main() {
     string[] excludeEmails = ["mygroup@abc.com"];
     var response = committerReportClient->printEmailList(userEmail, excludeEmails);
     if (response is error) {
-        io:println(response);
+        log:printError("Failed to print email list", err = response);
     }
 }
 ```
